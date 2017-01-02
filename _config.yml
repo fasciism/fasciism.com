@@ -1,0 +1,6 @@
+title: fASCIIsm: For the Love of Text
+baseurl: ""
+url: "http://fasciism.com"
+
+markdown: kramdown
+permalink: pretty
