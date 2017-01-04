@@ -36,7 +36,7 @@ We can unbind the key using <code>global-unset-key</code>:
 </div>
 
 <p>
-Now when we chord <code>C-x C-c</code> we will receive a message in the minibuffer stating "C-x C-c is undefined". Now since my goal is only to prevent myself from unintentionally exiting Emacs, I should mention that I can still trigger the function that closes emacs (<code>exit-emacs</code>) by calling it directly with <code>M-x exit-emacs</code>. Let's look at the help for <code>M-x</code>, which is used to execute any command that is configured as being interactively callable:
+Now when we chord <code>C-x C-c</code> we will receive a message in the minibuffer stating "C-x C-c is undefined". Now since my goal is only to prevent myself from unintentionally exiting Emacs, I should mention that I can still trigger the function that closes emacs (<code>exit-emacs</code>) by calling it directly with <code>M-x save-buffers-kill-emacs</code>. Let's look at the help for <code>M-x</code>, which is used to execute any command that is configured as being interactively callable:
 </p>
 
 <blockquote>
