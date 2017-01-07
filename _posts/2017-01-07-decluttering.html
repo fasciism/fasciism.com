@@ -1,0 +1,38 @@
+---
+layout: post
+---
+
+<p>
+Until somewhat recently I exclusively used Emacs in a terminal emulator, but now I understand the benefits the GUI offers: more colours, inline graphics, different fonts, and the fringe. We'll get to all of those in due time. The parts of the GUI that I'm not interested in are those which are intended to be used via the mouse.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(when (display-graphic-p)
+  (menu-bar-mode -1)
+  (tool-bar-mode -1)
+  (scroll-bar-mode -1))
+</pre>
+</div>
+
+<p>
+Since I'll still occasionally use Emacs in a terminal emulator, these interface elements are only disabled when Emacs is running in a GUI. Trying to disable them in the terminal, where they don't exist, will cause the startup customization process to error out. To learn about <code>display-graphic-p</code>, we'll use a different help facility designed specifically for retrieving the docstrings of functions: <code>describe-function</code> (<code>C-h f display-graphic-p</code>):
+</p>
+
+<pre class="example">
+(display-graphic-p &amp;optional DISPLAY)
+
+Return non-nil if DISPLAY is a graphic display.
+
+Graphical displays are those which are capable of displaying several frames and several different fonts at once. This is true for displays that use a window system such as X, and false for text-only terminals. DISPLAY can be a display name, a frame, or nil (meaning the selected frame's display).
+</pre>
+
+<p>
+By this point Emacs is looking appropriately svelte, especially compared to where we started:
+</p>
+
+
+<div class="figure">
+<p><img src="http://fasciism.com/img/2017-01-07-before-and-after.png" alt="2017-01-07-before-and-after.png" />
+</p>
+</div>
