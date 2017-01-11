@@ -1,0 +1,35 @@
+---
+layout: post
+---
+
+<p>
+Emacs uses a number of heuristics to induce structure on buffer text. One of these heuristics is that, by default, a single space is not the end of a sentence, but is an abbreviation. This interpretation of periods prevents Emacs from wrapping text after periods with only a single space.
+</p>
+
+<p>
+I don't put two spaces after my periods, and I like using word-wrapping.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(setq sentence-end-double-space nil)
+</pre>
+</div>
+
+<p>
+Reading through the variables documentation using the <code>describe-variable</code> help facility (<code>C-h v sentence-end-double-space</code>), we find other variables of interest:
+</p>
+
+<blockquote>
+<p>
+Non-nil means a single space does not end a sentence.
+</p>
+
+<p>
+This is relevant for filling.
+</p>
+</blockquote>
+
+<p>
+Filling will be discussed tomorrow, and is known elsewhere as reflowing.
+</p>
