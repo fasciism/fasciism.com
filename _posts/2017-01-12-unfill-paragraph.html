@@ -1,0 +1,56 @@
+---
+layout: post
+---
+
+<p>
+I've been into plain text for fifteen years now, and for much of that time I adhered to the rule of maintaining an eighty-character column width. While I usually continue to adhere to that for comments in source code, I've recently softened my stance when it comes to other text. This change occurred during the writing of the thesis proposal for my Master's degree (currently in progress). It turns out that viewing diffs (even word diffs) is difficult when text changes reflow the paragraph onto different lines. So as a result of my newly-found love for text that is easily diffed, I sought out a way to turn paragraphs containing line breaks into a single, unbroken line.
+</p>
+
+<p>
+In Emacs, the process of reflowing text to fit between the left margin and a chosen column is called 'filling'. Emacs maintains a variable, <code>fill-column</code>, which defaults to <code>70</code>. This variable is used by <code>fill-paragraph</code> (bound to <code>M-q</code>) and together they are used to reflow text into a given column size. Frequently, both in fixing my thesis proposal and copying snippets of text into this blog, I need to reflow text as though it had an infinite column width, and the below does just that:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">;;; Originally by Stefan Monnier &lt;foo@acm.org&gt;
+(defun mak::unfill-paragraph (&amp;optional region)
+  "Takes a multi-line paragraph and makes it into a single line of text."
+  (interactive (progn (barf-if-buffer-read-only) '(t)))
+  (let ((fill-column (point-max)))
+    (fill-paragraph nil region)))
+</pre>
+</div>
+
+<p>
+Since <code>fill-paragraph</code> is bound to <code>M-q</code>, binding its complement to <code>M-Q</code> seems appropriate:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(global-set-key (kbd "M-Q") 'mak::unfill-paragraph)
+</pre>
+</div>
+
+<p>
+I don't want text to scroll horizontally in a window, nor do I wish for it to wrap in the middle of a word. <code>visual-line-mode</code> takes care of that. Here we add a hook to all modes that inherit from <code>text-mode</code>, which is most writing/programming modes, that enables <code>visual-line-mode</code> in their buffers:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(add-hook 'text-mode-hook 'turn-on-visual-line-mode)
+</pre>
+</div>
+
+<p>
+I still use <code>fill-paragraph</code> on occasion, so we will give it a more modern value:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(setq-default fill-column 80)
+</pre>
+</div>
+
+<p>
+I use <code>setq-default</code> here instead of <code>setq</code> because some variables are global, and some are local to the buffer in which they are set. <code>setq-default</code> provides a default value for buffer-local values, like <code>fill-column</code>.
+</p>
