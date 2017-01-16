@@ -1,0 +1,38 @@
+---
+layout: post
+---
+
+<p>
+We're over two weeks into this whole blogging debacle, I guess it's time to start actually spellchecking my blog posts. I'm adapting this from <a href="http://blog.binchen.org/posts/what-s-the-best-spell-check-set-up-in-emacs.html">What's the best spell check setup in emacs</a>, which was updated within the last month. Looking into Hunspell versus Aspell, it turns out that the latter is unmaintained while the former had a release in the last month.
+</p>
+
+<p>
+The first thing I need to ensure is that both American and Canadian spellings work, because I have to write in both styles, constantly.
+</p>
+
+<pre class="example">
+👻 echo color colour | hunspell -a -d en_CA,en_US
+@(#) International Ispell Version 3.2.06 (but really Hunspell 1.3.3)
+*
+*
+</pre>
+
+<p>
+Seems like Hunspell does what I need.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(setq ispell-program-name "hunspell"
+      ispell-local-dictionary "en_CA"
+      ispell-local-dictionary-alist
+      '(("en_CA" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_CA,en_US") nil utf-8)))
+</pre>
+</div>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(add-hook 'text-mode-hook 'flyspell-mode)
+(add-hook 'prog-mode-hook 'flyspell-prog-mode)
+</pre>
+</div>
