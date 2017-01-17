@@ -1,0 +1,19 @@
+---
+layout: post
+---
+
+<p>
+Once thing you start running into when you have many buffers is colliding names. For instance, if I open up two files <code>~/foo/test</code> and <code>~/bar/test</code> I would have two buffers named <code>test&lt;1&gt;</code> and <code>test&lt;2&gt;</code>. This depends on the version of Emacs, but is not very attractive.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(require 'uniquify)
+(setq uniquify-buffer-name-style 'post-forward
+      uniquify-separator "::")
+</pre>
+</div>
+
+<p>
+Now those two buffers would be named <code>test::foo</code> and <code>test::bar</code>, which I find more palatable.
+</p>
