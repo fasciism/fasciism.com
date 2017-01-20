@@ -1,0 +1,22 @@
+---
+layout: post
+---
+
+<p>
+I have noticed the configurations of many others use a function similar to the one below to add some intelligence to moving to the start of a line. It seems like a good idea.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(defun mak::cycle-bol-boi ()
+  "Cycle between beginning of line and beginning of indentation."
+  (interactive)
+  (let ((orig (point)))
+    (back-to-indentation)
+    (when (= orig (point))
+      (move-beginning-of-line 1))))
+
+(global-set-key (kbd "C-a") 'mak::cycle-bol-boi)
+(global-set-key (kbd "&lt;home&gt;") 'mak::cycle-bol-boi)
+</pre>
+</div>
