@@ -1,0 +1,48 @@
+---
+layout: post
+---
+
+<p>
+Midnight mode clears out the list of buffers to trim Emacs down. It does this daily, to buffers that have not been accessed recently, to buffers that are likely to be temporary.
+</p>
+
+<p>
+The first thing I need to do is protect certain critical buffers from Midnight's selection. I'd be livid if any tramp or eshell buffers got nuked:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(require 'midnight)
+(add-to-list 'clean-buffer-list-kill-never-regexps "\\`\\*tramp::.*\\*\\`")
+(add-to-list 'clean-buffer-list-kill-never-regexps "\\`\\*eshell::.*\\*\\`")
+</pre>
+</div>
+
+<p>
+I don't think that keeping buffers around for the default three days is necessary:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(setq clean-buffer-list-delay-general 1)
+</pre>
+</div>
+
+<p>
+Set the culling to occur when I'm least likely to be awake:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(midnight-delay-set 'midnight-delay "4:30am")
+(midnight-mode t)
+</pre>
+</div>
+
+<p>
+Now that I've got midnight-mode to clean up after me, I might just stop closing buffers. We'll see.
+</p>
+
+<p>
+Midnight mode will be especially useful when I automate the posting of this blog, and the creation of checklists.
+</p>
