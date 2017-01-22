@@ -1,0 +1,98 @@
+---
+layout: post
+---
+
+<p>
+This blog is not focused on the specifics of Emacs lisp, but as we use new concepts I'll try and talk about them briefly. In elisp, symbols are not tied to a single meaning. They are nuanced, and may have variables, functions, or properties attached to them. We previously used this when we ran <code>(fset 'yes-or-no-p 'y-or-n-p)</code> to change the function associated with a symbol. All of the times we've run <code>setq</code> we have been setting the value associated with a symbol. Today we'll be setting the property associated with a symbol.
+</p>
+
+<p>
+Let's fool around with this a bit. First we make a function, and disable it.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(defun mak::test-disabling ()
+  "XXX-MAK: DEMO FUNCTION"
+  (interactive)
+  (message "Disabled: %s"
+	   (get 'mak::test-disabling 'disabled)))
+(put 'mak::test-disabling 'disabled "This function has been disabled as a demonstration.")
+</pre>
+</div>
+
+<p>
+Now let's run the function non-interactively, by calling it from elisp as opposed to a <code>M-x</code> or a keybinding, and see what happens.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(mak::test-disabling)
+</pre>
+</div>
+
+<p>
+This prints the message <code>Disabled: This function has been disabled as a demonstration.</code> as expected. Next we'll bind it to a key, only inside the current buffer for safety, and then trigger the key to see what happens.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(local-set-key (kbd "C-M-D") 'mak::test-disabling)
+</pre>
+</div>
+
+<p>
+This results in the following buffer being displayed:
+</p>
+
+
+<div class="figure">
+<p><img src="http://fasciism.com/img/2017-01-22-removing-safeties.png" alt="2017-01-22-removing-safeties.png" />
+</p>
+</div>
+
+<p>
+Once I enter <code>y</code>, the function executes and displays <code>Disabled: nil</code>. Now that we have a good handle on this, let's clean up the mess we just made:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(fmakunbound 'mak::test-disabling)
+(local-unset-key (kbd "C-M-D"))
+</pre>
+</div>
+
+<p>
+We could have used functions we already knew to bind things to <code>nil</code>, but the functions above are more appropriate and have the potential to be more thorough.
+</p>
+
+<p>
+Now, let's take the safeties off. We'll start with the region-based case adjustments. We've not discussed the region, so just think of it as the highlighted selection. These commands are constantly useful to me when I'm tidying up text from other sources.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(put 'downcase-region  'disabled nil)
+(put 'upcase-region    'disabled nil)
+</pre>
+</div>
+
+<p>
+The narrowing functions allow a buffer to alter its display to only include the desired text. This is useful both for blocking out distracting elements of a buffer, such as everything except a single function or paragraph, and for making and running keyboard macros without risking damage to unrelated sections of the buffer.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(put 'narrow-to-region 'disabled nil)
+</pre>
+</div>
+
+<p>
+Finally, the ability to set a goal column is useful when dealing with column-based data, and for keyboard macros. Setting a goal column means that when the point (cursor) enters a new line, it will attempt (if the line is long enough) to place itself at the specified column.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(put 'set-goal-column  'disabled nil)
+</pre>
+</div>
