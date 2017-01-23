@@ -1,3 +1,7 @@
+# Ignore posts that appear undated.
+/_posts/*
+!/_posts/2017-*
+
 *~
 _site
 \**\*
