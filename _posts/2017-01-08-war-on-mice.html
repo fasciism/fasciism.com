@@ -8,18 +8,18 @@ Continuing our war on mice (or in my case a Logitech M570 Trackball which I love
 
 <div class="org-src-container">
 
-<pre class="src src-emacs-lisp">(defun mak::silent (&amp;rest ignored)
-  (interactive)
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">defun</span> <span style="color: #268bd2;">mak::silent</span> (<span style="color: #b58900;">&amp;rest</span> ignored)
+  (<span style="color: #859900; font-weight: bold;">interactive</span>)
   nil)
 
-(defun mak::mouse-disable (&amp;rest ignored)
-  (dolist (event '("" "down-" "drag-" "double-" "triple-"))
-    (dotimes (button 3)
-      (let ((key (format "&lt;%smouse-%d&gt;" event (1+ button))))
-	;; Bind to a function that returns nil.
-	;; Binding to nil would unbind the key, resulting in errors when used.
-	;; Alternatively, we could bind to individual lambdas, but we don't.
-	(global-set-key (kbd key) 'mak::silent)))))
+(<span style="color: #859900; font-weight: bold;">defun</span> <span style="color: #268bd2;">mak::mouse-disable</span> (<span style="color: #b58900;">&amp;rest</span> ignored)
+  (<span style="color: #859900; font-weight: bold;">dolist</span> (event '(<span style="color: #2aa198;">""</span> <span style="color: #2aa198;">"down-"</span> <span style="color: #2aa198;">"drag-"</span> <span style="color: #2aa198;">"double-"</span> <span style="color: #2aa198;">"triple-"</span>))
+    (<span style="color: #859900; font-weight: bold;">dotimes</span> (button 3)
+      (<span style="color: #859900; font-weight: bold;">let</span> ((key (format <span style="color: #2aa198;">"&lt;%smouse-%d&gt;"</span> event (1+ button))))
+<span style="color: #dc322f; font-weight: bold;">        </span><span style="color: #586e75;">;; </span><span style="color: #586e75;">Bind to a function that returns nil.</span>
+<span style="color: #dc322f; font-weight: bold;">        </span><span style="color: #586e75;">;; </span><span style="color: #586e75;">Binding to nil would unbind the key, resulting in errors when used.</span>
+<span style="color: #dc322f; font-weight: bold;">        </span><span style="color: #586e75;">;; </span><span style="color: #586e75;">Alternatively, we could bind to individual lambdas, but we don't.</span>
+<span style="color: #dc322f; font-weight: bold;">        </span>(global-set-key (kbd key) 'mak::silent)))))
 </pre>
 </div>
 
@@ -29,11 +29,11 @@ Emacs Lisp, like most Lisp dialects, allows almost any character in a function n
 
 <div class="org-src-container">
 
-<pre class="src src-emacs-lisp">;; Run for first frame.
+<pre class="src src-emacs-lisp"><span style="color: #586e75;">;; </span><span style="color: #586e75;">Run for first frame.</span>
 (mak::mouse-disable)
 
-;; Run in the context of subsequently created frames.
-(advice-add 'make-frame-command :before #'mak::mouse-disable)
+<span style="color: #586e75;">;; </span><span style="color: #586e75;">Run in the context of subsequently created frames.</span>
+(advice-add 'make-frame-command <span style="color: #839496; font-weight: bold;">:before</span> #'mak::mouse-disable)
 </pre>
 </div>
 

@@ -8,15 +8,15 @@ I have noticed the configurations of many others use a function similar to the o
 
 <div class="org-src-container">
 
-<pre class="src src-emacs-lisp">(defun mak::cycle-bol-boi ()
-  "Cycle between beginning of line and beginning of indentation."
-  (interactive)
-  (let ((orig (point)))
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">defun</span> <span style="color: #268bd2;">mak::cycle-bol-boi</span> ()
+  <span style="color: #2aa198;">"Cycle between beginning of line and beginning of indentation."</span>
+  (<span style="color: #859900; font-weight: bold;">interactive</span>)
+  (<span style="color: #859900; font-weight: bold;">let</span> ((orig (point)))
     (back-to-indentation)
-    (when (= orig (point))
+    (<span style="color: #859900; font-weight: bold;">when</span> (= orig (point))
       (move-beginning-of-line 1))))
 
-(global-set-key (kbd "C-a") 'mak::cycle-bol-boi)
-(global-set-key (kbd "&lt;home&gt;") 'mak::cycle-bol-boi)
+(global-set-key (kbd <span style="color: #2aa198;">"C-a"</span>) 'mak::cycle-bol-boi)
+(global-set-key (kbd <span style="color: #2aa198;">"&lt;home&gt;"</span>) 'mak::cycle-bol-boi)
 </pre>
 </div>

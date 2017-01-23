@@ -8,7 +8,7 @@ Normally <code>&lt;backspace&gt;</code> is bound to <code>backward-delete-char-u
 
 <div class="org-src-container">
 
-<pre class="src src-emacs-lisp">(global-set-key (kbd "&lt;backspace&gt;") 'backward-delete-char)
+<pre class="src src-emacs-lisp">(global-set-key (kbd <span style="color: #2aa198;">"&lt;backspace&gt;"</span>) 'backward-delete-char)
 </pre>
 </div>
 
@@ -18,7 +18,7 @@ I'd also like to be able to tell if a file is indented with tabs or spaces. I li
 
 <div class="org-src-container">
 
-<pre class="src src-emacs-lisp">(setq whitespace-style '(face trailing tabs empty space-after-tab tab-mark))
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">setq</span> whitespace-style '(face trailing tabs empty space-after-tab tab-mark))
 (add-hook 'text-mode-hook 'whitespace-mode)
 (add-hook 'prog-mode-hook 'whitespace-mode)
 </pre>
@@ -34,6 +34,6 @@ By default, <code>M-SPC</code> turns a run of whitespace into a single space, an
 
 <div class="org-src-container">
 
-<pre class="src src-emacs-lisp">(global-set-key (kbd "M-SPC") 'cycle-spacing)
+<pre class="src src-emacs-lisp">(global-set-key (kbd <span style="color: #2aa198;">"M-SPC"</span>) 'cycle-spacing)
 </pre>
 </div>

@@ -12,11 +12,11 @@ In Emacs, the process of reflowing text to fit between the left margin and a cho
 
 <div class="org-src-container">
 
-<pre class="src src-emacs-lisp">;;; Originally by Stefan Monnier &lt;foo@acm.org&gt;
-(defun mak::unfill-paragraph (&amp;optional region)
-  "Takes a multi-line paragraph and makes it into a single line of text."
-  (interactive (progn (barf-if-buffer-read-only) '(t)))
-  (let ((fill-column (point-max)))
+<pre class="src src-emacs-lisp"><span style="color: #586e75;">;;; </span><span style="color: #586e75;">Originally by Stefan Monnier <a href="mailto:foo%40acm.org">&lt;foo@acm.org&gt;</a></span>
+(<span style="color: #859900; font-weight: bold;">defun</span> <span style="color: #268bd2;">mak::unfill-paragraph</span> (<span style="color: #b58900;">&amp;optional</span> region)
+  <span style="color: #2aa198;">"Takes a multi-line paragraph and makes it into a single line of text."</span>
+  (<span style="color: #859900; font-weight: bold;">interactive</span> (<span style="color: #859900; font-weight: bold;">progn</span> (barf-if-buffer-read-only) '(t)))
+  (<span style="color: #859900; font-weight: bold;">let</span> ((fill-column (point-max)))
     (fill-paragraph nil region)))
 </pre>
 </div>
@@ -27,7 +27,7 @@ Since <code>fill-paragraph</code> is bound to <code>M-q</code>, binding its comp
 
 <div class="org-src-container">
 
-<pre class="src src-emacs-lisp">(global-set-key (kbd "M-Q") 'mak::unfill-paragraph)
+<pre class="src src-emacs-lisp">(global-set-key (kbd <span style="color: #2aa198;">"M-Q"</span>) 'mak::unfill-paragraph)
 </pre>
 </div>
 
@@ -47,7 +47,7 @@ I still use <code>fill-paragraph</code> on occasion, so we will give it a more m
 
 <div class="org-src-container">
 
-<pre class="src src-emacs-lisp">(setq-default fill-column 80)
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">setq-default</span> fill-column 80)
 </pre>
 </div>
 

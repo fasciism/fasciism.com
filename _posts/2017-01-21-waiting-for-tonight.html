@@ -12,9 +12,9 @@ The first thing I need to do is protect certain critical buffers from Midnight's
 
 <div class="org-src-container">
 
-<pre class="src src-emacs-lisp">(require 'midnight)
-(add-to-list 'clean-buffer-list-kill-never-regexps "\\`\\*tramp::.*\\*\\`")
-(add-to-list 'clean-buffer-list-kill-never-regexps "\\`\\*eshell::.*\\*\\`")
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">require</span> '<span style="color: #268bd2; font-weight: bold;">midnight</span>)
+(add-to-list 'clean-buffer-list-kill-never-regexps <span style="color: #2aa198;">"\\`\\*tramp::.*\\*\\`"</span>)
+(add-to-list 'clean-buffer-list-kill-never-regexps <span style="color: #2aa198;">"\\`\\*eshell::.*\\*\\`"</span>)
 </pre>
 </div>
 
@@ -24,7 +24,7 @@ I don't think that keeping buffers around for the default three days is necessar
 
 <div class="org-src-container">
 
-<pre class="src src-emacs-lisp">(setq clean-buffer-list-delay-general 1)
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">setq</span> clean-buffer-list-delay-general 1)
 </pre>
 </div>
 
@@ -34,7 +34,7 @@ Set the culling to occur when I'm least likely to be awake:
 
 <div class="org-src-container">
 
-<pre class="src src-emacs-lisp">(midnight-delay-set 'midnight-delay "4:30am")
+<pre class="src src-emacs-lisp">(midnight-delay-set 'midnight-delay <span style="color: #2aa198;">"4:30am"</span>)
 (midnight-mode t)
 </pre>
 </div>

@@ -8,21 +8,21 @@ I previously mentioned that the sources for these blog entries are actually my c
 
 <div class="org-src-container">
 
-<pre class="src src-emacs-lisp">(require 'org)
-(require 'ox-publish)
-(require 'ox-html)
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">require</span> '<span style="color: #268bd2; font-weight: bold;">org</span>)
+(<span style="color: #859900; font-weight: bold;">require</span> '<span style="color: #268bd2; font-weight: bold;">ox-publish</span>)
+(<span style="color: #859900; font-weight: bold;">require</span> '<span style="color: #268bd2; font-weight: bold;">ox-html</span>)
 
-;; Set up blog for export as an Org-mode project.
-(setq org-publish-project-alist
-      '(("fasciism"
-	:base-directory "~/.emacs.d/"
-	:publishing-directory "~/src/fasciism/_posts/"
-	:base-extension "org"
-	:sub-superscript ""
-	:toc nil
-	:publishing-function org-html-publish-to-html
-	:html-extension "html"
-	:body-only t)))
+<span style="color: #586e75;">;; </span><span style="color: #586e75;">Set up blog for export as an Org-mode project.</span>
+(<span style="color: #859900; font-weight: bold;">setq</span> org-publish-project-alist
+      '((<span style="color: #2aa198;">"fasciism"</span>
+<span style="color: #dc322f; font-weight: bold;">        </span><span style="color: #839496; font-weight: bold;">:base-directory</span> <span style="color: #2aa198;">"~/.emacs.d/"</span>
+<span style="color: #dc322f; font-weight: bold;">        </span><span style="color: #839496; font-weight: bold;">:publishing-directory</span> <span style="color: #2aa198;">"~/src/fasciism/_posts/"</span>
+<span style="color: #dc322f; font-weight: bold;">        </span><span style="color: #839496; font-weight: bold;">:base-extension</span> <span style="color: #2aa198;">"org"</span>
+<span style="color: #dc322f; font-weight: bold;">        </span><span style="color: #839496; font-weight: bold;">:sub-superscript</span> <span style="color: #2aa198;">""</span>
+<span style="color: #dc322f; font-weight: bold;">        </span><span style="color: #839496; font-weight: bold;">:toc</span> nil
+<span style="color: #dc322f; font-weight: bold;">        </span><span style="color: #839496; font-weight: bold;">:publishing-function</span> org-html-publish-to-html
+<span style="color: #dc322f; font-weight: bold;">        </span><span style="color: #839496; font-weight: bold;">:html-extension</span> <span style="color: #2aa198;">"html"</span>
+<span style="color: #dc322f; font-weight: bold;">        </span><span style="color: #839496; font-weight: bold;">:body-only</span> t)))
 </pre>
 </div>
 

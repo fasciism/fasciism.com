@@ -21,7 +21,7 @@ When Savehist mode is enabled, minibuffer history is saved periodically and when
 </blockquote>
 
 <p>
-While saving the text in the minibuffer is a good start, there are a number of other aspects of a session that I would like to be saved. Surprising nobody, the variable <code>savehist-additional-variables</code> addressis this:
+While saving the text in the minibuffer is a good start, there are a number of other aspects of a session that I would like to be saved. Surprising nobody, the variable <code>savehist-additional-variables</code> addresses this:
 </p>
 
 <blockquote>
@@ -40,15 +40,15 @@ So let's add every history-related variable that I can find. This will even main
 
 <div class="org-src-container">
 
-<pre class="src src-emacs-lisp">(setq savehist-file "~/.emacs.d/savehist")
-(setq savehist-additional-variables
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">setq</span> savehist-file <span style="color: #2aa198;">"~/.emacs.p/savehist"</span>)
+(<span style="color: #859900; font-weight: bold;">setq</span> savehist-additional-variables
       '(buffer-name-history
-	compile-command
-	extended-command-history
-	file-name-history
-	kill-ring
-	regexp-search-ring
-	search-ring))
+<span style="color: #dc322f; font-weight: bold;">        </span>compile-command
+<span style="color: #dc322f; font-weight: bold;">        </span>extended-command-history
+<span style="color: #dc322f; font-weight: bold;">        </span>file-name-history
+<span style="color: #dc322f; font-weight: bold;">        </span>kill-ring
+<span style="color: #dc322f; font-weight: bold;">        </span>regexp-search-ring
+<span style="color: #dc322f; font-weight: bold;">        </span>search-ring))
 </pre>
 </div>
 

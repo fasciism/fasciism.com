@@ -12,12 +12,12 @@ Let's fool around with this a bit. First we make a function, and disable it.
 
 <div class="org-src-container">
 
-<pre class="src src-emacs-lisp">(defun mak::test-disabling ()
-  "XXX-MAK: DEMO FUNCTION"
-  (interactive)
-  (message "Disabled: %s"
-	   (get 'mak::test-disabling 'disabled)))
-(put 'mak::test-disabling 'disabled "This function has been disabled as a demonstration.")
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">defun</span> <span style="color: #268bd2;">mak::test-disabling</span> ()
+  <span style="color: #2aa198;">"XXX-MAK: DEMO FUNCTION"</span>
+  (<span style="color: #859900; font-weight: bold;">interactive</span>)
+  (message <span style="color: #2aa198;">"Disabled: %s"</span>
+<span style="color: #dc322f; font-weight: bold;">        </span>   (get 'mak::test-disabling 'disabled)))
+(put 'mak::test-disabling 'disabled <span style="color: #2aa198;">"This function has been disabled as a demonstration."</span>)
 </pre>
 </div>
 
@@ -37,7 +37,7 @@ This prints the message <code>Disabled: This function has been disabled as a dem
 
 <div class="org-src-container">
 
-<pre class="src src-emacs-lisp">(local-set-key (kbd "C-M-D") 'mak::test-disabling)
+<pre class="src src-emacs-lisp">(local-set-key (kbd <span style="color: #2aa198;">"C-M-D"</span>) 'mak::test-disabling)
 </pre>
 </div>
 
@@ -58,7 +58,7 @@ Once I enter <code>y</code>, the function executes and displays <code>Disabled: 
 <div class="org-src-container">
 
 <pre class="src src-emacs-lisp">(fmakunbound 'mak::test-disabling)
-(local-unset-key (kbd "C-M-D"))
+(local-unset-key (kbd <span style="color: #2aa198;">"C-M-D"</span>))
 </pre>
 </div>
 
