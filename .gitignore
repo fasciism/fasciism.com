@@ -1,6 +1,6 @@
 # Ignore posts that appear undated.
 /_posts/*
-!/_posts/2017-*
+!/_posts/[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]-*
 
 *~
 _site
