@@ -2,5 +2,8 @@ title: "fASCIIsm: For the Love of Text"
 baseurl: ""
 url: "http://fasciism.com"
 
+github_username: fASCIIsm
+twitter_username: fASCIIsm
+
 markdown: kramdown
 permalink: pretty
