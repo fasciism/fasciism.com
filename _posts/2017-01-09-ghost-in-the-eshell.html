@@ -28,39 +28,22 @@ I like my prompts simple. Prior to this, my prompt has been a lone percent sign 
 The <code>set-fontset-font</code> call is the heart of the above function, so let's look at its description:
 </p>
 
-<blockquote>
-<p>
-(set-fontset-font NAME TARGET FONT-SPEC &amp;optional FRAME ADD)
+<p class="verse">
+(set-fontset-font NAME TARGET FONT-SPEC &amp;optional FRAME ADD)<br  />
+<br  />
+Modify fontset NAME to use FONT-SPEC for TARGET characters.<br  />
+<br  />
+NAME is &#x2026; t for the default fontset.<br  />
+<br  />
+TARGET may be a single character to use FONT-SPEC for.<br  />
+<br  />
+FONT-SPEC may one of these:<br  />
+&#xa0;* A font name string.<br  />
+<br  />
+Optional 4th argument FRAME is a frame or nil for the selected frame that is concerned in the case that NAME is nil.<br  />
+<br  />
+Optional 5th argument ADD, if non-nil, specifies how to add FONT-SPEC to the font specifications for TARGET previously set. If it is ‘prepend’, FONT-SPEC is prepended. If it is ‘append’, FONT-SPEC is appended. By default, FONT-SPEC overrides the previous settings.<br  />
 </p>
-
-<p>
-Modify fontset NAME to use FONT-SPEC for TARGET characters.
-</p>
-
-<p>
-NAME is &#x2026; t for the default fontset.
-</p>
-
-<p>
-TARGET may be a single character to use FONT-SPEC for.
-</p>
-
-<p>
-FONT-SPEC may one of these:
-</p>
-<ul class="org-ul">
-<li>A font name string.
-</li>
-</ul>
-
-<p>
-Optional 4th argument FRAME is a frame or nil for the selected frame that is concerned in the case that NAME is nil.
-</p>
-
-<p>
-Optional 5th argument ADD, if non-nil, specifies how to add FONT-SPEC to the font specifications for TARGET previously set. If it is ‘prepend’, FONT-SPEC is prepended. If it is ‘append’, FONT-SPEC is appended. By default, FONT-SPEC overrides the previous settings.
-</p>
-</blockquote>
 
 <p>
 The end result of this is that we've configured Emacs to always display the ghost emoji in the Noto Emoji font.

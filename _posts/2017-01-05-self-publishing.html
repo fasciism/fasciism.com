@@ -34,19 +34,13 @@ First, the <code>require</code> lines import the libraries necessary for the exp
 To perform the publishing, I run <code>M-x org-publish-current-file</code>:
 </p>
 
-<blockquote>
-<p>
-(org-publish-current-file &amp;optional FORCE ASYNC)
+<p class="verse">
+(org-publish-current-file &amp;optional FORCE ASYNC)<br  />
+<br  />
+Publish the current file.<br  />
+<br  />
+With prefix argument FORCE, force publish the file. When optional argument ASYNC is non-nil, publishing will be done asynchronously, in another process.<br  />
 </p>
-
-<p>
-Publish the current file.
-</p>
-
-<p>
-With prefix argument FORCE, force publish the file. When optional argument ASYNC is non-nil, publishing will be done asynchronously, in another process.
-</p>
-</blockquote>
 
 <p>
 We'll talk about prefix arguments at a later date. For now, running this command populates the <code>_posts</code> directory of the Jekyll project that produces this blog.

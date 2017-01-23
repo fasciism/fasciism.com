@@ -6,24 +6,16 @@ layout: post
 As part of my dedication to staying in Emacs, I feel that I should endeavour to keep it open all of the time. While I can normally manage this, my mind occasionally wanders and reflexes take over and I find myself unintentionally chording the exit sequence. First, let's use the <code>describe-key</code> help facility (<code>C-h k</code>) to discover what is bound to the exit sequence (<code>C-h k C-x C-c</code>):
 </p>
 
-<blockquote>
-<p>
-C-x C-c runs the command save-buffers-kill-terminal (found in global-map), which is an interactive compiled Lisp function in ‘files.el’.
+<p class="verse">
+C-x C-c runs the command save-buffers-kill-terminal (found in global-map), which is an interactive compiled Lisp function in ‘files.el’.<br  />
+<br  />
+It is bound to C-x C-c, &lt;menu-bar&gt; &lt;file&gt; &lt;exit-emacs&gt;.<br  />
+<br  />
+(save-buffers-kill-terminal &amp;optional ARG)<br  />
+<br  />
+Offer to save each buffer, then kill the current connection.<br  />
+If the current frame has no client, kill Emacs itself.<br  />
 </p>
-
-<p>
-It is bound to C-x C-c, &lt;menu-bar&gt; &lt;file&gt; &lt;exit-emacs&gt;.
-</p>
-
-<p>
-(save-buffers-kill-terminal &amp;optional ARG)
-</p>
-
-<p>
-Offer to save each buffer, then kill the current connection.
-If the current frame has no client, kill Emacs itself.
-</p>
-</blockquote>
 
 <p>
 We can unbind the key using <code>global-unset-key</code>:
@@ -39,17 +31,11 @@ We can unbind the key using <code>global-unset-key</code>:
 Now when we chord <code>C-x C-c</code> we will receive a message in the minibuffer stating "C-x C-c is undefined". Now since my goal is only to prevent myself from unintentionally exiting Emacs, I should mention that I can still trigger the function that closes emacs (<code>exit-emacs</code>) by calling it directly with <code>M-x save-buffers-kill-emacs</code>. Let's look at the help for <code>M-x</code>, which is used to execute any command that is configured as being interactively callable:
 </p>
 
-<blockquote>
-<p>
-(execute-extended-command PREFIXARG &amp;optional COMMAND-NAME TYPED)
+<p class="verse">
+(execute-extended-command PREFIXARG &amp;optional COMMAND-NAME TYPED)<br  />
+<br  />
+This function is for interactive use only; in Lisp code use ‘command-execute’ instead.<br  />
+<br  />
+Read a command name, then read the arguments and call the command.<br  />
+To pass a prefix argument to the command you are invoking, give a prefix argument to ‘execute-extended-command’.<br  />
 </p>
-
-<p>
-This function is for interactive use only; in Lisp code use ‘command-execute’ instead.
-</p>
-
-<p>
-Read a command name, then read the arguments and call the command.
-To pass a prefix argument to the command you are invoking, give a prefix argument to ‘execute-extended-command’.
-</p>
-</blockquote>

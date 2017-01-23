@@ -19,13 +19,13 @@ Until somewhat recently I exclusively used Emacs in a terminal emulator, but now
 Since I'll still occasionally use Emacs in a terminal emulator, these interface elements are only disabled when Emacs is running in a GUI. Trying to disable them in the terminal, where they don't exist, will cause the startup customization process to error out. To learn about <code>display-graphic-p</code>, we'll use a different help facility designed specifically for retrieving the docstrings of functions: <code>describe-function</code> (<code>C-h f display-graphic-p</code>):
 </p>
 
-<pre class="example">
-(display-graphic-p &amp;optional DISPLAY)
-
-Return non-nil if DISPLAY is a graphic display.
-
-Graphical displays are those which are capable of displaying several frames and several different fonts at once. This is true for displays that use a window system such as X, and false for text-only terminals. DISPLAY can be a display name, a frame, or nil (meaning the selected frame's display).
-</pre>
+<p class="verse">
+(display-graphic-p &amp;optional DISPLAY)<br  />
+<br  />
+Return non-nil if DISPLAY is a graphic display.<br  />
+<br  />
+Graphical displays are those which are capable of displaying several frames and several different fonts at once. This is true for displays that use a window system such as X, and false for text-only terminals. DISPLAY can be a display name, a frame, or nil (meaning the selected frame's display).<br  />
+</p>
 
 <p>
 By this point Emacs is looking appropriately svelte, especially compared to where we started:
