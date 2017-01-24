@@ -1,0 +1,160 @@
+---
+layout: post
+---
+
+<p>
+As part of my job, I often have to look at X.509 (SSL/TLS) certificates. I almost never want to see them in their raw state, a blob of unintelligible Base64 or binary. When opening an image in Emacs, the image is displayed in the window by default, and <code>C-c C-c</code> toggles between the image and its representation on disk. I want to have the same thing for X.509 certificates.
+</p>
+
+<p>
+First we create the most important thing for any node, the hook that facilitates customization.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">defvar</span> <span style="color: #268bd2;">x509-certificate-mode-hook</span> nil)
+</pre>
+</div>
+
+<p>
+Then we build a function that can take a buffer and pipe it through the <code>openssl x509</code> command. This function needs to be smart enough to detect errors and undo any damage it causes on error.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">defun</span> <span style="color: #268bd2;">x509-certificate-parse-command</span> (encoding)
+  <span style="color: #2aa198;">"Parse the buffer using OpenSSL's x509 command and the specified encoding."</span>
+  (<span style="color: #859900; font-weight: bold;">let</span> ((errbuf (generate-new-buffer-name <span style="color: #2aa198;">"*x509-parse-error*"</span>)))
+    <span style="color: #586e75;">;; </span><span style="color: #586e75;">Try to parse buffer using specified encoding.</span>
+    (shell-command-on-region
+     (point-min)
+     (point-max)
+     (format <span style="color: #2aa198;">"openssl x509 -text -noout -inform %s"</span> encoding)
+     (buffer-name)
+     t
+     errbuf)
+    <span style="color: #586e75;">;; </span><span style="color: #586e75;">Check for failure, represented by the existence of errbuf.</span>
+    (<span style="color: #859900; font-weight: bold;">if</span> (get-buffer errbuf)
+<span style="color: #dc322f; font-weight: bold;">        </span><span style="color: #586e75;">;; </span><span style="color: #586e75;">Restore buffer to original state.</span>
+<span style="color: #dc322f; font-weight: bold;">        </span>(<span style="color: #859900; font-weight: bold;">progn</span>
+<span style="color: #dc322f; font-weight: bold;">        </span>  (kill-buffer errbuf)
+<span style="color: #dc322f; font-weight: bold;">        </span>  (insert x509-certificate-mode-text)
+<span style="color: #dc322f; font-weight: bold;">        </span>  nil)
+      t)))
+</pre>
+</div>
+
+<p>
+Next we need a pair of functions that can transform the buffer between parsed and raw states. Two variables will be needed, which should be local to the buffer: one to hold the raw buffer contents, and another to track the current state of the buffer.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">defun</span> <span style="color: #268bd2;">x509-certificate-parse</span> ()
+  <span style="color: #2aa198;">"Parse the buffer as a certificate, trying multiple encodings."</span>
+  (<span style="color: #859900; font-weight: bold;">interactive</span>)
+  (<span style="color: #859900; font-weight: bold;">if</span> (not (eq x509-certificate-mode-display <span style="color: #839496; font-weight: bold;">:raw</span>))
+      (<span style="color: #cb4b16; font-weight: bold;">error</span> <span style="color: #2aa198;">"The buffer is not in :raw mode, it's in %s mode."</span>
+<span style="color: #dc322f; font-weight: bold;">        </span>     x509-certificate-mode-display)
+    (<span style="color: #859900; font-weight: bold;">let</span> ((modified (buffer-modified-p)))
+      <span style="color: #586e75;">;; </span><span style="color: #586e75;">Save the contents of the buffer.</span>
+      (<span style="color: #859900; font-weight: bold;">setq</span> x509-certificate-mode-text (buffer-string))
+      (read-only-mode -1)
+      <span style="color: #586e75;">;; </span><span style="color: #586e75;">Try to convert the buffer through different formats.</span>
+      (<span style="color: #859900; font-weight: bold;">if</span> (not (x509-certificate-parse-command <span style="color: #2aa198;">"pem"</span>))
+<span style="color: #dc322f; font-weight: bold;">        </span>  (<span style="color: #859900; font-weight: bold;">if</span> (not (x509-certificate-parse-command <span style="color: #2aa198;">"der"</span>))
+<span style="color: #dc322f; font-weight: bold;">        </span>      (<span style="color: #cb4b16; font-weight: bold;">error</span> <span style="color: #2aa198;">"Failed to parse buffer as X.509 certificate."</span>)))
+      (read-only-mode 1)
+      <span style="color: #586e75;">;; </span><span style="color: #586e75;">Restore previous modification state.</span>
+      (set-buffer-modified-p modified)
+      (<span style="color: #859900; font-weight: bold;">setq</span> x509-certificate-mode-display <span style="color: #839496; font-weight: bold;">:parsed</span>))))
+
+(<span style="color: #859900; font-weight: bold;">defun</span> <span style="color: #268bd2;">x509-certificate-raw</span> ()
+  <span style="color: #2aa198;">"Revert buffer to unparsed contents."</span>
+  (<span style="color: #859900; font-weight: bold;">interactive</span>)
+  (<span style="color: #859900; font-weight: bold;">if</span> (not (eq x509-certificate-mode-display <span style="color: #839496; font-weight: bold;">:parsed</span>))
+      (<span style="color: #cb4b16; font-weight: bold;">error</span> <span style="color: #2aa198;">"The buffer is not in :parsed mode, it's in %s mode."</span>
+<span style="color: #dc322f; font-weight: bold;">        </span>     x509-certificate-mode-display)
+    (<span style="color: #859900; font-weight: bold;">let</span> ((modified (buffer-modified-p)))
+      <span style="color: #586e75;">;; </span><span style="color: #586e75;">Delete the buffer, which currently contains the parsed format.</span>
+      (read-only-mode -1)
+      (erase-buffer)
+      <span style="color: #586e75;">;; </span><span style="color: #586e75;">Convert the buffer into its raw format.</span>
+      (insert x509-certificate-mode-text)
+      (read-only-mode 1)
+      <span style="color: #586e75;">;; </span><span style="color: #586e75;">Restore previous modification state.</span>
+      (set-buffer-modified-p modified)
+      (<span style="color: #859900; font-weight: bold;">setq</span> x509-certificate-mode-display <span style="color: #839496; font-weight: bold;">:raw</span>))))
+</pre>
+</div>
+
+<p>
+With the transformation functions in place, we would like a keybinding to easily toggle between them. This is done by making a function that dispatches based on the state variable. We also create a keybinding for this mode, instead of tainting the global key map with our function.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">defun</span> <span style="color: #268bd2;">x509-certificate-toggle-display</span> ()
+  <span style="color: #2aa198;">"Toggle between raw and parsed displays of the buffer."</span>
+  (<span style="color: #859900; font-weight: bold;">interactive</span>)
+  (<span style="color: #859900; font-weight: bold;">cond</span> ((eq x509-certificate-mode-display <span style="color: #839496; font-weight: bold;">:parsed</span>)
+<span style="color: #dc322f; font-weight: bold;">        </span> (x509-certificate-raw))
+<span style="color: #dc322f; font-weight: bold;">        </span>((eq x509-certificate-mode-display <span style="color: #839496; font-weight: bold;">:raw</span>)
+<span style="color: #dc322f; font-weight: bold;">        </span> (x509-certificate-parse))
+<span style="color: #dc322f; font-weight: bold;">        </span>(t
+<span style="color: #dc322f; font-weight: bold;">        </span> (<span style="color: #cb4b16; font-weight: bold;">error</span> <span style="color: #2aa198;">"Variable x509-certificate-mode-display is in an unknown state: %s"</span>
+<span style="color: #dc322f; font-weight: bold;">                </span>x509-certificate-mode-display))))
+
+(<span style="color: #859900; font-weight: bold;">defvar</span> <span style="color: #268bd2;">x509-certificate-mode-map</span>
+  (<span style="color: #859900; font-weight: bold;">let</span> ((map (make-keymap)))
+    (define-key map (kbd <span style="color: #2aa198;">"C-c C-c"</span>) 'x509-certificate-toggle-display)
+    map)
+  <span style="color: #2aa198;">"Keymap for X.509 Certificate major mode"</span>)
+</pre>
+</div>
+
+<p>
+Calling modes manually via <code>M-x</code> is a pain, so we add likely extensions to a list that maps them to our new major mode. Certificates often have wacky extensions, though, so we also provide a regular expression to match text at the beginning of the buffer.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(add-to-list 'auto-mode-alist '(<span style="color: #2aa198;">"\\.</span><span style="color: #859900; font-weight: bold;">\\</span><span style="color: #b58900; font-weight: bold;">(</span><span style="color: #2aa198;">der</span><span style="color: #859900; font-weight: bold;">\\</span><span style="color: #b58900; font-weight: bold;">|</span><span style="color: #2aa198;">crt</span><span style="color: #859900; font-weight: bold;">\\</span><span style="color: #b58900; font-weight: bold;">|</span><span style="color: #2aa198;">pem</span><span style="color: #859900; font-weight: bold;">\\</span><span style="color: #b58900; font-weight: bold;">)</span><span style="color: #2aa198;">\\'"</span> . x509-certificate-mode))
+(add-to-list 'magic-mode-alist '(<span style="color: #2aa198;">"-----BEGIN CERTIFICATE-----"</span> . x509-certificate-mode))
+</pre>
+</div>
+
+<p>
+Finally, we create our major mode and register it in the Emacs environment. Overly verbose comments are inline.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">defun</span> <span style="color: #268bd2;">x509-certificate-mode</span> ()
+  <span style="color: #2aa198;">"Major mode for viewing X.509 certificates"</span>
+  <span style="color: #586e75;">;; </span><span style="color: #586e75;">Ensure this function is callable by M-x.</span>
+  (<span style="color: #859900; font-weight: bold;">interactive</span>)
+  <span style="color: #586e75;">;; </span><span style="color: #586e75;">Clear the slate.</span>
+  (kill-all-local-variables)
+  <span style="color: #586e75;">;; </span><span style="color: #586e75;">Use our key map just for this buffer</span>
+  (use-local-map x509-certificate-mode-map)
+  <span style="color: #586e75;">;; </span><span style="color: #586e75;">Set the symbol (computer-recognizable) and name (human-visible).</span>
+  (<span style="color: #859900; font-weight: bold;">setq</span> major-mode 'x509-certificate-mode
+<span style="color: #dc322f; font-weight: bold;">        </span>mode-name <span style="color: #2aa198;">"X.509"</span>)
+  <span style="color: #586e75;">;; </span><span style="color: #586e75;">Create the two buffer-local variables on which our functions depend.</span>
+  (<span style="color: #859900; font-weight: bold;">defvar-local</span> <span style="color: #268bd2;">x509-certificate-mode-display</span> <span style="color: #839496; font-weight: bold;">:raw</span>
+    <span style="color: #2aa198;">"Current display mode of the data"</span>)
+  (<span style="color: #859900; font-weight: bold;">defvar-local</span> <span style="color: #268bd2;">x509-certificate-mode-text</span> nil
+    <span style="color: #2aa198;">"Original text of the buffer"</span>)
+  <span style="color: #586e75;">;; </span><span style="color: #586e75;">Run the customization hooks.</span>
+  (run-hooks 'x509-certificate-mode-hook)
+  <span style="color: #586e75;">;; </span><span style="color: #586e75;">Perform the initial parse of the buffer</span>
+  (x509-certificate-parse))
+
+(<span style="color: #859900; font-weight: bold;">provide</span> '<span style="color: #268bd2; font-weight: bold;">x509-certificate-mode</span>)
+</pre>
+</div>
+
+<p>
+And that's it, not much to it. From this point forward I will look at parsed certificates in Emacs by default. This makes me ridiculously happy.
+</p>
