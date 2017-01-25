@@ -1,0 +1,53 @@
+---
+layout: post
+---
+
+<p>
+Every time I export the blog from Org-mode to HTML, I need to go through new entries and add the YAML header that Jekyll (this blog's site generator) uses. I'm tired of doing that, so it's time to automate it.
+</p>
+
+<p>
+First we add the symbol for our not-yet-defined function to the property list that defines this Org project. A property list is a flat list of the form <code>(:param1 value1 ... :paramN valueN)</code>.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp"><span style="color: #586e75;">;; </span><span style="color: #586e75;">List contains (("fasciism" ...)) before proper plist begins.</span>
+<span style="color: #586e75;">;; </span><span style="color: #586e75;">cdar = (cdr (car ...)), removing first element of list.</span>
+(plist-put (cdar org-publish-project-alist)
+<span style="color: #dc322f; font-weight: bold;">        </span>   <span style="color: #839496; font-weight: bold;">:completion-function</span>
+<span style="color: #dc322f; font-weight: bold;">        </span>   'mak::fasciism-project-export-completion)
+</pre>
+</div>
+
+<p>
+This method for accessing <code>org-publish-project-alist</code> depends on the blog being the first project. While a terrible way to do things, it'll work since Emacs loads these blog entries in sequence so that later additions to my Org projects won't cause this to fail.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">defun</span> <span style="color: #268bd2;">mak::fasciism-project-export-completion</span> (<span style="color: #b58900;">&amp;rest</span> project)
+  <span style="color: #2aa198;">"Ensure the YAML header exists on blog entries."</span>
+  <span style="color: #586e75;">;; </span><span style="color: #586e75;">In Org v8, we check a dynamically-scoped variable.</span>
+  <span style="color: #586e75;">;; </span><span style="color: #586e75;">In Org v9, we get a parameter passed to us.</span>
+  (<span style="color: #859900; font-weight: bold;">unless</span> project
+    (<span style="color: #859900; font-weight: bold;">setq</span> project project-plist))
+  (<span style="color: #859900; font-weight: bold;">let*</span> ((dir (plist-get project <span style="color: #839496; font-weight: bold;">:publishing-directory</span>))
+<span style="color: #dc322f; font-weight: bold;">        </span> (files (directory-files dir t <span style="color: #2aa198;">"\\.html$"</span>)))
+    <span style="color: #586e75;">;; </span><span style="color: #586e75;">For each HTML file.</span>
+    (<span style="color: #859900; font-weight: bold;">dolist</span> (file files)
+      <span style="color: #586e75;">;; </span><span style="color: #586e75;">Create a temporary buffer tied to the HTML file.</span>
+      (<span style="color: #859900; font-weight: bold;">with-temp-file</span> file
+       (insert-file-contents file)
+<span style="color: #dc322f; font-weight: bold;">        </span> <span style="color: #586e75;">;; </span><span style="color: #586e75;">Check for YAML header, inserting if absent.</span>
+<span style="color: #dc322f; font-weight: bold;">        </span> (<span style="color: #859900; font-weight: bold;">unless</span> (equal (buffer-substring 1 5) <span style="color: #2aa198;">"---\n"</span>)
+<span style="color: #dc322f; font-weight: bold;">        </span>   (insert <span style="color: #2aa198;">"---\n"</span>
+<span style="color: #dc322f; font-weight: bold;">                </span>   <span style="color: #2aa198;">"layout: post\n"</span>
+<span style="color: #dc322f; font-weight: bold;">                </span>   <span style="color: #2aa198;">"---\n"</span>
+<span style="color: #dc322f; font-weight: bold;">                </span>   <span style="color: #2aa198;">"\n"</span>))))))
+</pre>
+</div>
+
+<p>
+While most of the functions used above will be recognizable to your average programmer, I want to take a moment to discuss <code>let*</code>. We've used <code>let</code> before when we needed to create temporary variables, so why do I use <code>let*</code> here? It's because <code>let*</code> allows me to create a variable that references the value assigned to a previous variable in the same assignment list. Specifically, we define <code>dir</code>, and then we use <code>dir</code> in the definition of <code>files</code>. We could have made the definition of <code>files</code> longer, but I prefer this method of breaking it up into smaller assignments that accrete.
+</p>
