@@ -69,8 +69,7 @@ Eshell has special behaviour when you have the point after the prompt, honouring
 
 <div class="org-src-container">
 
-<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">setq</span> eshell-prompt-regex
-      (<span style="color: #859900; font-weight: bold;">lambda</span> () (format <span style="color: #2aa198;">"^%s "</span> (mak::ghost-or-percent))))
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">setq</span> eshell-prompt-regexp (format <span style="color: #2aa198;">"^%s "</span> (mak::ghost-or-percent)))
 </pre>
 </div>
 
