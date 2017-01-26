@@ -1,0 +1,51 @@
+---
+layout: post
+---
+
+<p>
+After trying to use Eshell for the month, I've been fine-tuning its behaviour so that I can tolerate it. There's more work to do, but the first step is to create a command that gets the <code>*eshell*</code> buffer out of the way, taking me back to whatever I was just doing. In mosts modes <code>q</code> is bound to <code>bury-buffer</code>, which sends the current buffer to the back of the list of buffers.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">defun</span> <span style="color: #268bd2;">eshell/q</span> ()
+  <span style="color: #2aa198;">"Send the *eshell* buffer to the back of buffer list."</span>
+  (bury-buffer))
+</pre>
+</div>
+
+<p>
+I've also found that I'd much rather use Dired instead of Eshell for many tasks. At the same time, it's convenient to be able to quickly switch between the two, so here we add a binding to the <code>e</code> key in Dired and add the <code>d</code> command in Eshell.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">defun</span> <span style="color: #268bd2;">eshell/d</span> ()
+  <span style="color: #2aa198;">"Open a dired instance of the current working directory."</span>
+  (dired <span style="color: #2aa198;">"."</span>))
+
+(<span style="color: #859900; font-weight: bold;">require</span> '<span style="color: #268bd2; font-weight: bold;">dired</span>)
+(define-key dired-mode-map <span style="color: #2aa198;">"e"</span>
+  <span style="color: #586e75;">;; </span><span style="color: #586e75;">Force the creation of a new Eshell instance at this path.</span>
+  (<span style="color: #859900; font-weight: bold;">lambda</span> ()
+    (<span style="color: #859900; font-weight: bold;">interactive</span>)
+    (eshell t)))
+</pre>
+</div>
+
+<p>
+Forcing a creation of a new Eshell ensures it has the same directory as Dired.
+</p>
+
+<p>
+Finally, now that I have started using the <code>~/.emacs.p</code> directory for all of my private files I want Eshell's files to be stored there. I also increased <code>eshell-history-size</code> to a ridiculous number. If that gets ungainly in the future, I'll reduce it.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">setq</span> eshell-history-size 100000
+      eshell-aliases-file <span style="color: #2aa198;">"~/.emacs.p/eshell/aliases"</span>
+      eshell-history-file-name <span style="color: #2aa198;">"~/.emacs.p/eshell/history"</span>
+      eshell-last-dir-ring-file-name <span style="color: #2aa198;">"~/.emacs.p/eshell/lastdir"</span>)
+</pre>
+</div>
