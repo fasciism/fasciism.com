@@ -1,0 +1,58 @@
+---
+layout: post
+---
+
+<p>
+The first file that Emacs runs when it loads is <code>~/.emacs.d/init.el</code>. This file is written using <a href="https://en.wikipedia.org/wiki/Emacs_Lisp">Emacs Lisp (elisp)</a>. It is important to get one thing clear in your head: Emacs is just a Lisp runtime. This means that while Emacs is primarily considered a text editor, that's just its user interface, not its application.
+</p>
+
+<p>
+The init file that I'm using right now takes every various files with the <code>.org</code> extension and converts them to the correspondingly named <code>.el</code> file, and then evaluates the files altering the Emacs active session. Comments are prefixed with <a href="https://www.gnu.org/software/emacs/manual/html_node/elisp/Comment-Tips.html">varying numbers of semicolons</a>. In classic Unix fashion, <a href="https://en.wikipedia.org/wiki/Lions%2527_Commentary_on_UNIX_6th_Edition,_with_Source_Code#.22You_are_not_expected_to_understand_this.22">you are not expected to understand this</a>.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp"><span style="color: #586e75;">;;; </span><span style="color: #586e75;">init.el --- Where all the magic begins</span>
+<span style="color: #586e75;">;;</span>
+<span style="color: #586e75;">;; </span><span style="color: #586e75;">Originally from:</span>
+<span style="color: #586e75;">;;     </span><span style="color: #586e75;">http://orgmode.org/worg/org-contrib/babel/intro.html#literate-emacs-init</span>
+<span style="color: #586e75;">;;</span>
+<span style="color: #586e75;">;; </span><span style="color: #586e75;">This file loads Org-mode and then loads the rest of our Emacs initialization</span>
+<span style="color: #586e75;">;; </span><span style="color: #586e75;">from Emacs lisp embedded in literate Org-mode files.</span>
+
+<span style="color: #586e75;">;; </span><span style="color: #586e75;">Load up Org Mode and (now included) Org Babel for elisp embedded in Org Mode</span>
+<span style="color: #586e75;">;; </span><span style="color: #586e75;">files.</span>
+
+(<span style="color: #859900; font-weight: bold;">defun</span> <span style="color: #268bd2;">mak::load-literate-config</span> (dir <span style="color: #b58900;">&amp;optional</span> regex)
+  <span style="color: #2aa198;">"Load and evaluate the files in dir matching regex, except blacklisted files."</span>
+  (<span style="color: #859900; font-weight: bold;">unless</span> regex
+    (<span style="color: #859900; font-weight: bold;">setq</span> regex <span style="color: #2aa198;">""</span>))
+  (<span style="color: #859900; font-weight: bold;">dolist</span> (org (directory-files dir t (concat regex <span style="color: #2aa198;">".*\\.org$"</span>)))
+    (org-babel-load-file org)))
+
+(<span style="color: #859900; font-weight: bold;">setq</span> dotfiles-dir (file-name-directory (<span style="color: #859900; font-weight: bold;">or</span> (buffer-file-name) load-file-name)))
+
+(<span style="color: #859900; font-weight: bold;">let*</span> ((org-dir (expand-file-name <span style="color: #2aa198;">"lisp"</span>
+<span style="color: #dc322f; font-weight: bold;">        </span>(expand-file-name <span style="color: #2aa198;">"org"</span>
+<span style="color: #dc322f; font-weight: bold;">        </span> (expand-file-name <span style="color: #2aa198;">"src"</span>
+<span style="color: #dc322f; font-weight: bold;">        </span>  dotfiles-dir))))
+       (org-contrib-dir (expand-file-name <span style="color: #2aa198;">"lisp"</span>
+<span style="color: #dc322f; font-weight: bold;">        </span>(expand-file-name <span style="color: #2aa198;">"contrib"</span>
+<span style="color: #dc322f; font-weight: bold;">        </span> (expand-file-name <span style="color: #2aa198;">".."</span>
+<span style="color: #dc322f; font-weight: bold;">        </span>  org-dir))))
+       (load-path (append (list org-dir org-contrib-dir)
+<span style="color: #dc322f; font-weight: bold;">                        </span>  (<span style="color: #859900; font-weight: bold;">or</span> load-path nil))))
+  <span style="color: #586e75;">;; </span><span style="color: #586e75;">Load up Org-mode and Org-babel.</span>
+  (<span style="color: #859900; font-weight: bold;">require</span> '<span style="color: #268bd2; font-weight: bold;">org-install</span>)
+  (<span style="color: #859900; font-weight: bold;">require</span> '<span style="color: #268bd2; font-weight: bold;">ob-tangle</span>))
+
+<span style="color: #586e75;">;; </span><span style="color: #586e75;">Load up all literate org-mode files matching the regex in each directory.</span>
+(mak::load-literate-config <span style="color: #2aa198;">"~/.emacs.d"</span> <span style="color: #2aa198;">"\[0-9\]\\{4\\}-\[0-9\]\\{2\\}-\[0-9\]\\{2\\}-"</span>)
+(mak::load-literate-config <span style="color: #2aa198;">"~/.emacs.d/drafts"</span> <span style="color: #2aa198;">"YYYY-MM-DD-"</span>)
+(mak::load-literate-config <span style="color: #2aa198;">"~/.emacs.p"</span>)
+</pre>
+</div>
+
+<p>
+I have edited the bottom of the file to only import my blog posts, both published and unscheduled drafts, and my private configuration files.
+</p>
