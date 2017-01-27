@@ -8,30 +8,30 @@ One thing that I do frequently is run a command that produces a lot of output, o
 
 <div class="org-src-container">
 
-<pre class="src src-emacs-lisp">  (<span style="color: #859900; font-weight: bold;">defun</span> <span style="color: #268bd2;">eshell/kill-previous-output</span> (<span style="color: #b58900;">&amp;optional</span> nth)
-    <span style="color: #2aa198;">"Copies the output of the previous command to the kill ring.</span>
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">defun</span> <span style="color: #268bd2;">eshell/kill-previous-output</span> (<span style="color: #b58900;">&amp;optional</span> nth)
+  <span style="color: #2aa198;">"Copies the output of the previous command to the kill ring.</span>
 <span style="color: #2aa198;">When nth is set, it will copy the nth previous command."</span>
-    (<span style="color: #859900; font-weight: bold;">save-excursion</span>
-      <span style="color: #586e75;">;; </span><span style="color: #586e75;">Move to the end of the eshell buffer.</span>
-      (goto-char (point-max))
+  (<span style="color: #859900; font-weight: bold;">save-excursion</span>
+    <span style="color: #586e75;">;; </span><span style="color: #586e75;">Move to the end of the eshell buffer.</span>
+    (goto-char (point-max))
+    <span style="color: #586e75;">;; </span><span style="color: #586e75;">Move to the start of the last prompt.</span>
+    (search-backward-regexp eshell-prompt-regexp nil nil nth)
+    <span style="color: #586e75;">;; </span><span style="color: #586e75;">Move to the start of the line, before the prompt.</span>
+    (beginning-of-line)
+    <span style="color: #586e75;">;; </span><span style="color: #586e75;">Remember this position as the end of the region.</span>
+    (<span style="color: #859900; font-weight: bold;">let</span> ((end (point)))
       <span style="color: #586e75;">;; </span><span style="color: #586e75;">Move to the start of the last prompt.</span>
-      (search-backward-regexp eshell-prompt-regexp nil nil nth)
-      <span style="color: #586e75;">;; </span><span style="color: #586e75;">Move to the start of the line, before the prompt.</span>
-      (beginning-of-line)
-      <span style="color: #586e75;">;; </span><span style="color: #586e75;">Remember this position as the end of the region.</span>
-      (<span style="color: #859900; font-weight: bold;">let</span> ((end (point)))
-<span style="color: #dc322f; font-weight: bold;">        </span><span style="color: #586e75;">;; </span><span style="color: #586e75;">Move to the start of the last prompt.</span>
-<span style="color: #dc322f; font-weight: bold;">        </span>(search-backward-regexp eshell-prompt-regexp)
-<span style="color: #dc322f; font-weight: bold;">        </span><span style="color: #586e75;">;; </span><span style="color: #586e75;">Move one line below the prompt, where the output begins.</span>
-<span style="color: #dc322f; font-weight: bold;">        </span>(next-line)
-<span style="color: #dc322f; font-weight: bold;">        </span><span style="color: #586e75;">;; </span><span style="color: #586e75;">Find first line that's not blank.</span>
-<span style="color: #dc322f; font-weight: bold;">        </span>(<span style="color: #859900; font-weight: bold;">while</span> (looking-at <span style="color: #2aa198;">"^[[:space:]]*$"</span>)
-<span style="color: #dc322f; font-weight: bold;">        </span>  (beginning-of-line)
-<span style="color: #dc322f; font-weight: bold;">        </span>  (next-line))
-<span style="color: #dc322f; font-weight: bold;">        </span><span style="color: #586e75;">;; </span><span style="color: #586e75;">Copy region to kill ring.</span>
-<span style="color: #dc322f; font-weight: bold;">        </span>(copy-region-as-kill (point) end)
-<span style="color: #dc322f; font-weight: bold;">        </span><span style="color: #586e75;">;; </span><span style="color: #586e75;">Output stats on what was copied as a sanity check.</span>
-<span style="color: #dc322f; font-weight: bold;">        </span>(format <span style="color: #2aa198;">"Copied %s words to kill ring."</span> (count-words-region (point) end)))))
+      (search-backward-regexp eshell-prompt-regexp)
+      <span style="color: #586e75;">;; </span><span style="color: #586e75;">Move one line below the prompt, where the output begins.</span>
+      (next-line)
+      <span style="color: #586e75;">;; </span><span style="color: #586e75;">Find first line that's not blank.</span>
+      (<span style="color: #859900; font-weight: bold;">while</span> (looking-at <span style="color: #2aa198;">"^[[:space:]]*$"</span>)
+<span style="color: #dc322f; font-weight: bold;">        </span>(beginning-of-line)
+<span style="color: #dc322f; font-weight: bold;">        </span>(next-line))
+      <span style="color: #586e75;">;; </span><span style="color: #586e75;">Copy region to kill ring.</span>
+      (copy-region-as-kill (point) end)
+      <span style="color: #586e75;">;; </span><span style="color: #586e75;">Output stats on what was copied as a sanity check.</span>
+      (format <span style="color: #2aa198;">"Copied %s words to kill ring."</span> (count-words-region (point) end)))))
 </pre>
 </div>
 
