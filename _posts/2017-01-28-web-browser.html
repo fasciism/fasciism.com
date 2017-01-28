@@ -1,0 +1,18 @@
+---
+layout: post
+---
+
+<p>
+Just a minor configuration change today. I've noticed that when I trigger URLs in Emacs in various modes my web browser doesn't pop up properly. I've looked at a few options for fixing this, and the most straightforward one is this:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">setq</span> browse-url-browser-function 'browse-url-generic
+      browse-url-generic-program <span style="color: #2aa198;">"firefox"</span>)
+</pre>
+</div>
+
+<p>
+That is all. Good day to you.
+</p>
