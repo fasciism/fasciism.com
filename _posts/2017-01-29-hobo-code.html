@@ -1,0 +1,157 @@
+---
+layout: post
+---
+
+<p>
+Continuing my love of semi-nonsensical blog entry titles only tangentially related to the topic in any way&#x2026;
+</p>
+
+<p>
+I have some boxes at work that I need to log into frequently. Now that I'm trying to use Eshell instead of <code>xterm</code>, I need to set up Tramp properly. Tramp is an Emacs mode that abstracts the connection to another machine in such a way that editing files, running remote commands, and navigating remote directories with Dired all work.
+</p>
+
+<p>
+The first thing I needed to do to make Tramp work was to add the following line to the top of my <code>~/.zshrc</code>. This line checks for terminals that are 'dumb', meaning they lack advanced features or are likely not normal terminal emulators, and if so: disables Zsh's line-editing facilities, sets the prompt to a traditional style, and stops processing the remainder of the configuration file.
+</p>
+
+<pre class="example">
+#######################################################
+# Emacs Tramp
+#######################################################
+[[ $TERM == "dumb" ]] &amp;&amp; unsetopt zle &amp;&amp; PS1='$ ' &amp;&amp; return
+</pre>
+
+<p>
+Once the above line is in place, Eshell immediately works:
+</p>
+
+<pre class="example">
+👻 cd /ssh:stormy:
+👻 pwd
+/ssh:stormy:/home/fasciism
+👻 cat ../../etc/motd
+ _____ _
+/  ___| |
+\ `--.| |_ ___  _ __ _ __ ___  _   _
+ `--. | __/ _ \| '__| '_ ` _ \| | | |
+/\__/ | || (_) | |  | | | | | | |_| |
+\____/ \__\___/|_|  |_| |_| |_|\__, |
+                                __/ |
+Stormageddon: Dark Lord of All |___/
+https://www.youtube.com/watch?v=bWK61bkQ-ME
+</pre>
+
+<p>
+Eshell and Tramp ignore all the login banners and message-of-the-day (MOTD) information from the remote system. From this point on, you can execute commands on the remote system since you are effectively SSH'd into it:
+</p>
+
+<pre class="example">
+👻 hostname
+stormy
+👻 cat /etc/hostname
+aboyne
+</pre>
+
+<p>
+It's important to know that absolute paths still refer to the system on which Emacs resides, while relative paths refer to the current working directory of Eshell (i.e., the remote host). If I attempt to run <code>find-file</code> on the remote machine to edit the MOTD, the buffer will be marked as read-only
+</p>
+
+<pre class="example">
+👻 find-file ../../etc/motd
+#&lt;buffer motd&gt;
+👻 (with-current-buffer "motd" buffer-read-only)
+t
+</pre>
+
+<p>
+Thankfully, Tramp also supports elevating our privilege via <code>sudo</code> on local and remote hosts. The downside is that this operation requires a horrific syntax. Using <code>sudo ffap</code> isn't an option either, since <code>sudo</code> opens a new shell on the remote machine through which Emacs has no special relationship.
+</p>
+
+<pre class="example">
+👻 sudo find-file ../../etc/motd
+[sudo] password for fasciism: [redacted[
+sudo: find-file: command not found
+</pre>
+
+<p>
+However, using Tramp's <code>sudo</code> syntax and multi-hop capabilities, we can use <code>C-x C-f /ssh:stormy|sudo:stormy:/etc/motd</code>, type in the password, and start editing the MOTD in Emacs, resulting in:
+</p>
+
+<pre class="example">
+👻 cat ../../etc/motd
+ _____ _
+/  ___| |
+\ `--.| |_ ___  _ __ _ __ ___  _   _
+ `--. | __/ _ \| '__| '_ ` _ \| | | |
+/\__/ | || (_) | |  | | | | | | |_| |
+\____/ \__\___/|_|  |_| |_| |_|\__, |
+                                __/ |
+SUDO VIA TRAMP APPEARS TO WORK |___/
+https://www.youtube.com/watch?v=bWK61bkQ-ME
+</pre>
+
+<p>
+Since this syntax is so ungainly, I've decided to make two emacs functions <code>f</code> (an alias for <code>find-file</code>) and <code>f!</code> which tries to edit the file using sudo (locally or remote).
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">defun</span> <span style="color: #268bd2;">mak::get-buffer-path</span> (<span style="color: #b58900;">&amp;optional</span> name)
+  <span style="color: #2aa198;">"Finds the current path, including for Eshell buffers where it is the working directory."</span>
+  (<span style="color: #859900; font-weight: bold;">interactive</span> <span style="color: #2aa198;">"b"</span>)
+  (<span style="color: #859900; font-weight: bold;">with-current-buffer</span> name
+    (<span style="color: #859900; font-weight: bold;">if</span> (eq major-mode 'eshell-mode)
+        (substring-no-properties default-directory)
+      (buffer-file-name))))
+
+(<span style="color: #859900; font-weight: bold;">defun</span> <span style="color: #268bd2;">mak::get-buffer-tramp-context</span> (<span style="color: #b58900;">&amp;optional</span> name)
+  <span style="color: #2aa198;">"Finds a buffer's Tramp context based on its file name."</span>
+  (<span style="color: #859900; font-weight: bold;">interactive</span> <span style="color: #2aa198;">"b"</span>)
+  (<span style="color: #859900; font-weight: bold;">let</span> ((path (mak::get-buffer-path name)))
+    <span style="color: #586e75;">;; </span><span style="color: #586e75;">Match single and chained contexts.</span>
+    (<span style="color: #859900; font-weight: bold;">if</span> (string-match <span style="color: #2aa198;">"^</span><span style="color: #859900; font-weight: bold;">\\</span><span style="color: #b58900; font-weight: bold;">(</span><span style="color: #2aa198;">/</span><span style="color: #859900; font-weight: bold;">\\</span><span style="color: #b58900; font-weight: bold;">(</span><span style="color: #2aa198;">ssh</span><span style="color: #859900; font-weight: bold;">\\</span><span style="color: #b58900; font-weight: bold;">|</span><span style="color: #2aa198;">sudo</span><span style="color: #859900; font-weight: bold;">\\</span><span style="color: #b58900; font-weight: bold;">)</span><span style="color: #2aa198;">:[</span><span style="color: #b58900; font-weight: bold;">^</span><span style="color: #2aa198;">:|]+</span><span style="color: #859900; font-weight: bold;">\\</span><span style="color: #b58900; font-weight: bold;">(</span><span style="color: #2aa198;">|</span><span style="color: #859900; font-weight: bold;">\\</span><span style="color: #b58900; font-weight: bold;">(</span><span style="color: #2aa198;">ssh</span><span style="color: #859900; font-weight: bold;">\\</span><span style="color: #b58900; font-weight: bold;">|</span><span style="color: #2aa198;">sudo</span><span style="color: #859900; font-weight: bold;">\\</span><span style="color: #b58900; font-weight: bold;">)</span><span style="color: #2aa198;">:[</span><span style="color: #b58900; font-weight: bold;">^</span><span style="color: #2aa198;">:|]+</span><span style="color: #859900; font-weight: bold;">\\</span><span style="color: #b58900; font-weight: bold;">)</span><span style="color: #2aa198;">*:</span><span style="color: #859900; font-weight: bold;">\\</span><span style="color: #b58900; font-weight: bold;">)</span><span style="color: #2aa198;">"</span> path)
+        (match-string 1 path)
+      (<span style="color: #cb4b16; font-weight: bold;">user-error</span> <span style="color: #2aa198;">"Failed to find Tramp context in path %s."</span> path))))
+
+(<span style="color: #859900; font-weight: bold;">defun</span> <span style="color: #268bd2;">mak::get-last-hop-from-tramp-context</span> (ctx)
+  <span style="color: #2aa198;">"Finds the last host or user@host hop in a Tramp context."</span>
+  (<span style="color: #859900; font-weight: bold;">if</span> (string-match <span style="color: #2aa198;">"[/:]</span><span style="color: #859900; font-weight: bold;">\\</span><span style="color: #b58900; font-weight: bold;">(?:</span><span style="color: #2aa198;">ssh</span><span style="color: #859900; font-weight: bold;">\\</span><span style="color: #b58900; font-weight: bold;">|</span><span style="color: #2aa198;">sudo</span><span style="color: #859900; font-weight: bold;">\\</span><span style="color: #b58900; font-weight: bold;">)</span><span style="color: #2aa198;">:</span><span style="color: #859900; font-weight: bold;">\\</span><span style="color: #b58900; font-weight: bold;">(</span><span style="color: #2aa198;">[</span><span style="color: #b58900; font-weight: bold;">^</span><span style="color: #2aa198;">:]+</span><span style="color: #859900; font-weight: bold;">\\</span><span style="color: #b58900; font-weight: bold;">)</span><span style="color: #2aa198;">:$"</span> ctx)
+      (match-string 1 ctx)
+      (<span style="color: #cb4b16; font-weight: bold;">user-error</span> <span style="color: #2aa198;">"Failed to find last hop in context %s."</span> ctx)))
+
+(<span style="color: #859900; font-weight: bold;">defun</span> <span style="color: #268bd2;">mak::tramp-remote-find-file-with-sudo</span> (file)
+  <span style="color: #2aa198;">"Attempts to open a file using Tramp and Sudo."</span>
+  <span style="color: #586e75;">;; </span><span style="color: #586e75;">We need to currently be within a Tramp 'context'.</span>
+  (<span style="color: #859900; font-weight: bold;">let*</span> ((ctx (mak::get-buffer-tramp-context (current-buffer)))
+         (hop (mak::get-last-hop-from-tramp-context ctx)))
+    (find-file (format <span style="color: #2aa198;">"%s|sudo:%s:%s"</span>
+                       (substring ctx 0 -1)
+                       hop
+                       file))))
+
+(<span style="color: #859900; font-weight: bold;">defun</span> <span style="color: #268bd2;">eshell/f</span> (file)
+  <span style="color: #2aa198;">"An alias for find-file."</span>
+  (find-file file))
+
+(<span style="color: #859900; font-weight: bold;">defun</span> <span style="color: #268bd2;">eshell/f!</span> (file)
+  <span style="color: #2aa198;">"An alias for find-file-with-sudo."</span>
+  (<span style="color: #859900; font-weight: bold;">if</span> (equal <span style="color: #2aa198;">"/"</span> (substring file 0 1))
+      (find-file (concat <span style="color: #2aa198;">"/sudo::"</span> file))
+    (mak::tramp-remote-find-file-with-sudo file)))
+</pre>
+</div>
+
+<p>
+And with this we now have an easy way to edit either local (absolute) or remote (relative) files with much less typing.
+</p>
+
+<pre class="example">
+👻 f! /etc/motd
+#&lt;buffer motd::&gt;
+👻 f! ../../etc/motd
+#&lt;buffer motd::/ssh:stormy:&gt;
+</pre>
+
+<p>
+While the determination of whether to access the local or remote file isn't ideal, it's not bad for a couple hours of work. I can always touch up the logic in a future entry.
+</p>
