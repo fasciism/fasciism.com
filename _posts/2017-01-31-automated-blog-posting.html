@@ -1,0 +1,35 @@
+---
+layout: post
+---
+
+<p>
+To celebrate one full month of blogging, I have written a function that will post the HTML and Org files that comprise each day's blog entry automatically with Midnight, as seen earlier this month.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">defun</span> <span style="color: #268bd2;">mak::fasciism-post-daily-blog</span> ()
+  <span style="color: #2aa198;">"Posts daily blog in HTML and Org format to respective GitHub repos."</span>
+  <span style="color: #586e75;">;; </span><span style="color: #586e75;">Publish the project to ensure the HTML file is on disk.</span>
+  (org-publish-project <span style="color: #2aa198;">"fasciism"</span>)
+  <span style="color: #586e75;">;; </span><span style="color: #586e75;">Set up the common one-liner to publish a file.</span>
+  (<span style="color: #859900; font-weight: bold;">let</span> ((cmd (string-join
+              '(<span style="color: #2aa198;">"cd %s"</span>
+                <span style="color: #2aa198;">"git add %s-*.%s"</span>
+                <span style="color: #2aa198;">"git commit -m 'Daily blog post.'"</span>
+                <span style="color: #2aa198;">"git push"</span>)
+              <span style="color: #2aa198;">" &amp;&amp; "</span>))
+        (date (format-time-string <span style="color: #2aa198;">"%F"</span>)))
+    <span style="color: #586e75;">;; </span><span style="color: #586e75;">Publish the HTML file.</span>
+    (<span style="color: #859900; font-weight: bold;">let</span> ((file (format <span style="color: #2aa198;">"_posts/%s"</span> date)))
+      (shell-command (format cmd <span style="color: #2aa198;">"~/src/fasciism"</span> file <span style="color: #2aa198;">"html"</span>) <span style="color: #2aa198;">"*fasciism-blog-post::html*"</span>))
+    <span style="color: #586e75;">;; </span><span style="color: #586e75;">Publish the Org file.</span>
+    (shell-command (format cmd <span style="color: #2aa198;">"~/.emacs.d"</span> date <span style="color: #2aa198;">"org"</span>) <span style="color: #2aa198;">"*fasciism-blog-post::org*"</span>)))
+
+(add-hook 'midnight-mode 'mak::fasciism-post-daily-blog)
+</pre>
+</div>
+
+<p>
+And with that, we've made it! An entire month sticking to the built-in features of Emacs and using it every day. Tomorrow I will lift that self-imposed restriction and dive into the wide world of packages.
+</p>
