@@ -1,0 +1,42 @@
+---
+layout: post
+---
+
+<p>
+I've been holding off on adding packages to my configuration until I had been at this for a month. So it's finally time to celebrate a month of daily blogging by adding every major package repository to my configuration:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">require</span> '<span style="color: #268bd2; font-weight: bold;">package</span>)
+(<span style="color: #859900; font-weight: bold;">setq</span> package-archives '((<span style="color: #2aa198;">"melpa-stable"</span> . <span style="color: #2aa198;">"https://stable.melpa.org/packages/"</span>)
+                         (<span style="color: #2aa198;">"marmalade"</span> . <span style="color: #2aa198;">"http://marmalade-repo.org/packages/"</span>)
+                         (<span style="color: #2aa198;">"melpa"</span> . <span style="color: #2aa198;">"https://melpa.org/packages/"</span>)
+                         (<span style="color: #2aa198;">"elpa"</span> . <span style="color: #2aa198;">"https://elpa.gnu.org/packages/"</span>)))
+(<span style="color: #859900; font-weight: bold;">setq</span> package-enable-at-startup nil)
+(package-initialize)
+</pre>
+</div>
+
+<p>
+Note that instead of using <code>add-to-list</code> I have used <code>setq</code>. This is because for no functional reason, I just like seeing <code>elpa</code> instead of <code>gnu</code> as the name of the core Emacs repo. Whenever possible, I will try and use packages from the <code>elpa</code> repository first, then <code>melpa-stable</code>, then <code>melpa</code>, then <code>marmalade</code>. I have nothing against Marmalade, and placing it last is not a statement about its quality or trustworthiness, I just like MELPA's idea of having a stable repository.
+</p>
+
+<p>
+There are many, many packages to choose from, and it's been hard living without them for the first month of this blog. So let's start slow, by installing the package <code>use-package</code> that will enable us to easily use and configure other packages.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">unless</span> (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+
+(<span style="color: #859900; font-weight: bold;">eval-when-compile</span>
+  (<span style="color: #859900; font-weight: bold;">require</span> '<span style="color: #268bd2; font-weight: bold;">use-package</span>))
+</pre>
+</div>
+
+<p>
+This tells Emacs to download <code>use-package</code> if it's not already installed. For most of this week we will revel in silly little cosmetic changes that make me happy.
+</p>
