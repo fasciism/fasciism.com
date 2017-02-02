@@ -35,11 +35,11 @@ Then we build a function that can take a buffer and pipe it through the <code>op
      errbuf)
     <span style="color: #586e75;">;; </span><span style="color: #586e75;">Check for failure, represented by the existence of errbuf.</span>
     (<span style="color: #859900; font-weight: bold;">if</span> (get-buffer errbuf)
-<span style="color: #dc322f; font-weight: bold;">        </span><span style="color: #586e75;">;; </span><span style="color: #586e75;">Restore buffer to original state.</span>
-<span style="color: #dc322f; font-weight: bold;">        </span>(<span style="color: #859900; font-weight: bold;">progn</span>
-<span style="color: #dc322f; font-weight: bold;">        </span>  (kill-buffer errbuf)
-<span style="color: #dc322f; font-weight: bold;">        </span>  (insert x509-certificate-mode-text)
-<span style="color: #dc322f; font-weight: bold;">        </span>  nil)
+        <span style="color: #586e75;">;; </span><span style="color: #586e75;">Restore buffer to original state.</span>
+        (<span style="color: #859900; font-weight: bold;">progn</span>
+          (kill-buffer errbuf)
+          (insert x509-certificate-mode-text)
+          nil)
       t)))
 </pre>
 </div>
@@ -55,15 +55,15 @@ Next we need a pair of functions that can transform the buffer between parsed an
   (<span style="color: #859900; font-weight: bold;">interactive</span>)
   (<span style="color: #859900; font-weight: bold;">if</span> (not (eq x509-certificate-mode-display <span style="color: #839496; font-weight: bold;">:raw</span>))
       (<span style="color: #cb4b16; font-weight: bold;">error</span> <span style="color: #2aa198;">"The buffer is not in :raw mode, it's in %s mode."</span>
-<span style="color: #dc322f; font-weight: bold;">        </span>     x509-certificate-mode-display)
+             x509-certificate-mode-display)
     (<span style="color: #859900; font-weight: bold;">let</span> ((modified (buffer-modified-p)))
       <span style="color: #586e75;">;; </span><span style="color: #586e75;">Save the contents of the buffer.</span>
       (<span style="color: #859900; font-weight: bold;">setq</span> x509-certificate-mode-text (buffer-string))
       (read-only-mode -1)
       <span style="color: #586e75;">;; </span><span style="color: #586e75;">Try to convert the buffer through different formats.</span>
       (<span style="color: #859900; font-weight: bold;">if</span> (not (x509-certificate-parse-command <span style="color: #2aa198;">"pem"</span>))
-<span style="color: #dc322f; font-weight: bold;">        </span>  (<span style="color: #859900; font-weight: bold;">if</span> (not (x509-certificate-parse-command <span style="color: #2aa198;">"der"</span>))
-<span style="color: #dc322f; font-weight: bold;">        </span>      (<span style="color: #cb4b16; font-weight: bold;">error</span> <span style="color: #2aa198;">"Failed to parse buffer as X.509 certificate."</span>)))
+          (<span style="color: #859900; font-weight: bold;">if</span> (not (x509-certificate-parse-command <span style="color: #2aa198;">"der"</span>))
+              (<span style="color: #cb4b16; font-weight: bold;">error</span> <span style="color: #2aa198;">"Failed to parse buffer as X.509 certificate."</span>)))
       (read-only-mode 1)
       <span style="color: #586e75;">;; </span><span style="color: #586e75;">Restore previous modification state.</span>
       (set-buffer-modified-p modified)
@@ -74,7 +74,7 @@ Next we need a pair of functions that can transform the buffer between parsed an
   (<span style="color: #859900; font-weight: bold;">interactive</span>)
   (<span style="color: #859900; font-weight: bold;">if</span> (not (eq x509-certificate-mode-display <span style="color: #839496; font-weight: bold;">:parsed</span>))
       (<span style="color: #cb4b16; font-weight: bold;">error</span> <span style="color: #2aa198;">"The buffer is not in :parsed mode, it's in %s mode."</span>
-<span style="color: #dc322f; font-weight: bold;">        </span>     x509-certificate-mode-display)
+             x509-certificate-mode-display)
     (<span style="color: #859900; font-weight: bold;">let</span> ((modified (buffer-modified-p)))
       <span style="color: #586e75;">;; </span><span style="color: #586e75;">Delete the buffer, which currently contains the parsed format.</span>
       (read-only-mode -1)
@@ -98,12 +98,12 @@ With the transformation functions in place, we would like a keybinding to easily
   <span style="color: #2aa198;">"Toggle between raw and parsed displays of the buffer."</span>
   (<span style="color: #859900; font-weight: bold;">interactive</span>)
   (<span style="color: #859900; font-weight: bold;">cond</span> ((eq x509-certificate-mode-display <span style="color: #839496; font-weight: bold;">:parsed</span>)
-<span style="color: #dc322f; font-weight: bold;">        </span> (x509-certificate-raw))
-<span style="color: #dc322f; font-weight: bold;">        </span>((eq x509-certificate-mode-display <span style="color: #839496; font-weight: bold;">:raw</span>)
-<span style="color: #dc322f; font-weight: bold;">        </span> (x509-certificate-parse))
-<span style="color: #dc322f; font-weight: bold;">        </span>(t
-<span style="color: #dc322f; font-weight: bold;">        </span> (<span style="color: #cb4b16; font-weight: bold;">error</span> <span style="color: #2aa198;">"Variable x509-certificate-mode-display is in an unknown state: %s"</span>
-<span style="color: #dc322f; font-weight: bold;">                </span>x509-certificate-mode-display))))
+         (x509-certificate-raw))
+        ((eq x509-certificate-mode-display <span style="color: #839496; font-weight: bold;">:raw</span>)
+         (x509-certificate-parse))
+        (t
+         (<span style="color: #cb4b16; font-weight: bold;">error</span> <span style="color: #2aa198;">"Variable x509-certificate-mode-display is in an unknown state: %s"</span>
+                x509-certificate-mode-display))))
 
 (<span style="color: #859900; font-weight: bold;">defvar</span> <span style="color: #268bd2;">x509-certificate-mode-map</span>
   (<span style="color: #859900; font-weight: bold;">let</span> ((map (make-keymap)))
@@ -140,7 +140,7 @@ Finally, we create our major mode and register it in the Emacs environment. Over
   (use-local-map x509-certificate-mode-map)
   <span style="color: #586e75;">;; </span><span style="color: #586e75;">Set the symbol (computer-recognizable) and name (human-visible).</span>
   (<span style="color: #859900; font-weight: bold;">setq</span> major-mode 'x509-certificate-mode
-<span style="color: #dc322f; font-weight: bold;">        </span>mode-name <span style="color: #2aa198;">"X.509"</span>)
+        mode-name <span style="color: #2aa198;">"X.509"</span>)
   <span style="color: #586e75;">;; </span><span style="color: #586e75;">Create the two buffer-local variables on which our functions depend.</span>
   (<span style="color: #859900; font-weight: bold;">defvar-local</span> <span style="color: #268bd2;">x509-certificate-mode-display</span> <span style="color: #839496; font-weight: bold;">:raw</span>
     <span style="color: #2aa198;">"Current display mode of the data"</span>)

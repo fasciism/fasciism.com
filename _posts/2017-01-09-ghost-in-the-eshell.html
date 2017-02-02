@@ -11,11 +11,11 @@ A problem with fonts and unicode is that many of the characters have no glyphs i
 <pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">defun</span> <span style="color: #268bd2;">mak::ghost-or-percent</span> ()
   (<span style="color: #859900; font-weight: bold;">interactive</span>)                                                   <span style="color: #586e75;">; </span><span style="color: #586e75;">Allow call via M-x or binding</span>
   (<span style="color: #859900; font-weight: bold;">let</span> ((ghost <span style="color: #2aa198;">"&#128123;"</span>)                                              <span style="color: #586e75;">; </span><span style="color: #586e75;">My desired prompt</span>
-<span style="color: #dc322f; font-weight: bold;">        </span>(percent <span style="color: #2aa198;">"%"</span>))                                            <span style="color: #586e75;">; </span><span style="color: #586e75;">My fallback prompt</span>
+        (percent <span style="color: #2aa198;">"%"</span>))                                            <span style="color: #586e75;">; </span><span style="color: #586e75;">My fallback prompt</span>
     (<span style="color: #859900; font-weight: bold;">if</span> (<span style="color: #859900; font-weight: bold;">and</span> (display-graphic-p)                                  <span style="color: #586e75;">; </span><span style="color: #586e75;">Are we in the GUI?</span>
-<span style="color: #dc322f; font-weight: bold;">        </span>     (member <span style="color: #2aa198;">"Noto Emoji"</span> (font-family-list)))            <span style="color: #586e75;">; </span><span style="color: #586e75;">Do we have the emoji font?</span>
-<span style="color: #dc322f; font-weight: bold;">        </span>(<span style="color: #859900; font-weight: bold;">progn</span> (set-fontset-font t ?&#128123; <span style="color: #2aa198;">"Noto Emoji"</span> nil 'prepend) <span style="color: #586e75;">; </span><span style="color: #586e75;">Use the emoji font for the ghost</span>
-<span style="color: #dc322f; font-weight: bold;">        </span>       ghost)                                             <span style="color: #586e75;">; </span><span style="color: #586e75;">Return desired prompt</span>
+             (member <span style="color: #2aa198;">"Noto Emoji"</span> (font-family-list)))            <span style="color: #586e75;">; </span><span style="color: #586e75;">Do we have the emoji font?</span>
+        (<span style="color: #859900; font-weight: bold;">progn</span> (set-fontset-font t ?&#128123; <span style="color: #2aa198;">"Noto Emoji"</span> nil 'prepend) <span style="color: #586e75;">; </span><span style="color: #586e75;">Use the emoji font for the ghost</span>
+               ghost)                                             <span style="color: #586e75;">; </span><span style="color: #586e75;">Return desired prompt</span>
       percent)))                                                  <span style="color: #586e75;">; </span><span style="color: #586e75;">Return fallback prompt</span>
 </pre>
 </div>
@@ -54,10 +54,10 @@ The end result of this is that we've configured Emacs to always display the ghos
 <pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">defun</span> <span style="color: #268bd2;">mak::eshell-prompt</span> ()
   (<span style="color: #859900; font-weight: bold;">interactive</span>)
   (concat (<span style="color: #859900; font-weight: bold;">if</span> (not (eq 0 (current-column)))
-<span style="color: #dc322f; font-weight: bold;">        </span>    <span style="color: #2aa198;">"\n"</span>
-<span style="color: #dc322f; font-weight: bold;">        </span>    <span style="color: #2aa198;">""</span>)
-<span style="color: #dc322f; font-weight: bold;">        </span>  (mak::ghost-or-percent)
-<span style="color: #dc322f; font-weight: bold;">        </span>  <span style="color: #2aa198;">" "</span>))
+            <span style="color: #2aa198;">"\n"</span>
+            <span style="color: #2aa198;">""</span>)
+          (mak::ghost-or-percent)
+          <span style="color: #2aa198;">" "</span>))
 
 (<span style="color: #859900; font-weight: bold;">setq</span> eshell-prompt-function 'mak::eshell-prompt)
 </pre>

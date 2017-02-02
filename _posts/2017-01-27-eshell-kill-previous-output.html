@@ -26,8 +26,8 @@ One thing that I do frequently is run a command that produces a lot of output, o
       (next-line)
       <span style="color: #586e75;">;; </span><span style="color: #586e75;">Find first line that's not blank.</span>
       (<span style="color: #859900; font-weight: bold;">while</span> (looking-at <span style="color: #2aa198;">"^[[:space:]]*$"</span>)
-<span style="color: #dc322f; font-weight: bold;">        </span>(beginning-of-line)
-<span style="color: #dc322f; font-weight: bold;">        </span>(next-line))
+        (beginning-of-line)
+        (next-line))
       <span style="color: #586e75;">;; </span><span style="color: #586e75;">Copy region to kill ring.</span>
       (copy-region-as-kill (point) end)
       <span style="color: #586e75;">;; </span><span style="color: #586e75;">Output stats on what was copied as a sanity check.</span>

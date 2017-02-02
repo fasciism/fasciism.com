@@ -33,15 +33,15 @@ The init file that I'm using right now takes every various files with the <code>
 (<span style="color: #859900; font-weight: bold;">setq</span> dotfiles-dir (file-name-directory (<span style="color: #859900; font-weight: bold;">or</span> (buffer-file-name) load-file-name)))
 
 (<span style="color: #859900; font-weight: bold;">let*</span> ((org-dir (expand-file-name <span style="color: #2aa198;">"lisp"</span>
-<span style="color: #dc322f; font-weight: bold;">        </span>(expand-file-name <span style="color: #2aa198;">"org"</span>
-<span style="color: #dc322f; font-weight: bold;">        </span> (expand-file-name <span style="color: #2aa198;">"src"</span>
-<span style="color: #dc322f; font-weight: bold;">        </span>  dotfiles-dir))))
+        (expand-file-name <span style="color: #2aa198;">"org"</span>
+         (expand-file-name <span style="color: #2aa198;">"src"</span>
+          dotfiles-dir))))
        (org-contrib-dir (expand-file-name <span style="color: #2aa198;">"lisp"</span>
-<span style="color: #dc322f; font-weight: bold;">        </span>(expand-file-name <span style="color: #2aa198;">"contrib"</span>
-<span style="color: #dc322f; font-weight: bold;">        </span> (expand-file-name <span style="color: #2aa198;">".."</span>
-<span style="color: #dc322f; font-weight: bold;">        </span>  org-dir))))
+        (expand-file-name <span style="color: #2aa198;">"contrib"</span>
+         (expand-file-name <span style="color: #2aa198;">".."</span>
+          org-dir))))
        (load-path (append (list org-dir org-contrib-dir)
-<span style="color: #dc322f; font-weight: bold;">                        </span>  (<span style="color: #859900; font-weight: bold;">or</span> load-path nil))))
+                          (<span style="color: #859900; font-weight: bold;">or</span> load-path nil))))
   <span style="color: #586e75;">;; </span><span style="color: #586e75;">Load up Org-mode and Org-babel.</span>
   (<span style="color: #859900; font-weight: bold;">require</span> '<span style="color: #268bd2; font-weight: bold;">org-install</span>)
   (<span style="color: #859900; font-weight: bold;">require</span> '<span style="color: #268bd2; font-weight: bold;">ob-tangle</span>))

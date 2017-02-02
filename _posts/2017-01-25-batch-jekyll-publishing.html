@@ -15,8 +15,8 @@ First we add the symbol for our not-yet-defined function to the property list th
 <pre class="src src-emacs-lisp"><span style="color: #586e75;">;; </span><span style="color: #586e75;">List contains (("fasciism" ...)) before proper plist begins.</span>
 <span style="color: #586e75;">;; </span><span style="color: #586e75;">cdar = (cdr (car ...)), removing first element of list.</span>
 (plist-put (cdar org-publish-project-alist)
-<span style="color: #dc322f; font-weight: bold;">        </span>   <span style="color: #839496; font-weight: bold;">:completion-function</span>
-<span style="color: #dc322f; font-weight: bold;">        </span>   'mak::fasciism-project-export-completion)
+           <span style="color: #839496; font-weight: bold;">:completion-function</span>
+           'mak::fasciism-project-export-completion)
 </pre>
 </div>
 
@@ -33,18 +33,18 @@ This method for accessing <code>org-publish-project-alist</code> depends on the 
   (<span style="color: #859900; font-weight: bold;">unless</span> project
     (<span style="color: #859900; font-weight: bold;">setq</span> project project-plist))
   (<span style="color: #859900; font-weight: bold;">let*</span> ((dir (plist-get project <span style="color: #839496; font-weight: bold;">:publishing-directory</span>))
-<span style="color: #dc322f; font-weight: bold;">        </span> (files (directory-files dir t <span style="color: #2aa198;">"\\.html$"</span>)))
+         (files (directory-files dir t <span style="color: #2aa198;">"\\.html$"</span>)))
     <span style="color: #586e75;">;; </span><span style="color: #586e75;">For each HTML file.</span>
     (<span style="color: #859900; font-weight: bold;">dolist</span> (file files)
       <span style="color: #586e75;">;; </span><span style="color: #586e75;">Create a temporary buffer tied to the HTML file.</span>
       (<span style="color: #859900; font-weight: bold;">with-temp-file</span> file
        (insert-file-contents file)
-<span style="color: #dc322f; font-weight: bold;">        </span> <span style="color: #586e75;">;; </span><span style="color: #586e75;">Check for YAML header, inserting if absent.</span>
-<span style="color: #dc322f; font-weight: bold;">        </span> (<span style="color: #859900; font-weight: bold;">unless</span> (equal (buffer-substring 1 5) <span style="color: #2aa198;">"---\n"</span>)
-<span style="color: #dc322f; font-weight: bold;">        </span>   (insert <span style="color: #2aa198;">"---\n"</span>
-<span style="color: #dc322f; font-weight: bold;">                </span>   <span style="color: #2aa198;">"layout: post\n"</span>
-<span style="color: #dc322f; font-weight: bold;">                </span>   <span style="color: #2aa198;">"---\n"</span>
-<span style="color: #dc322f; font-weight: bold;">                </span>   <span style="color: #2aa198;">"\n"</span>))))))
+         <span style="color: #586e75;">;; </span><span style="color: #586e75;">Check for YAML header, inserting if absent.</span>
+         (<span style="color: #859900; font-weight: bold;">unless</span> (equal (buffer-substring 1 5) <span style="color: #2aa198;">"---\n"</span>)
+           (insert <span style="color: #2aa198;">"---\n"</span>
+                   <span style="color: #2aa198;">"layout: post\n"</span>
+                   <span style="color: #2aa198;">"---\n"</span>
+                   <span style="color: #2aa198;">"\n"</span>))))))
 </pre>
 </div>
 
