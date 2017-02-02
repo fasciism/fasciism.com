@@ -1,0 +1,27 @@
+---
+layout: post
+---
+
+<p>
+As you might have guessed, writing my Emacs configuration in this style leads me to need to reload the system often to ensure that things are in the correct order as I make new drafts and go back to fix mistakes. So far I have been handling this by manually calling <code>M-x kill-emacs</code> and running the program anew. Now that we have packages available, <a href="https://github.com/iqbalansari/restart-emacs">restart-emacs</a> gives us a better way:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">defun</span> <span style="color: #268bd2;">mak::restart-emacs-or-release-file</span> ()
+  (<span style="color: #859900; font-weight: bold;">interactive</span>)
+  (<span style="color: #859900; font-weight: bold;">if</span> server-buffer-clients
+      (server-edit)
+    (<span style="color: #859900; font-weight: bold;">when</span> (y-or-n-p <span style="color: #2aa198;">"Restart Emacs? "</span>)
+      (restart-emacs '(<span style="color: #2aa198;">"--debug-init"</span>)))))
+
+(<span style="color: #859900; font-weight: bold;">use-package</span> <span style="color: #268bd2; font-weight: bold;">restart-emacs</span>
+  <span style="color: #839496; font-weight: bold;">:ensure</span> t
+  <span style="color: #839496; font-weight: bold;">:pin</span> melpa-stable
+  <span style="color: #839496; font-weight: bold;">:bind</span> (<span style="color: #2aa198;">"C-x C-c"</span> . mak::restart-emacs-or-release-file))
+</pre>
+</div>
+
+<p>
+On <a href="http://fasciism.com/2017/01/03/simplified-confirmations/">Day 3</a> we changed confirmations to <code>y-or-n-p</code>, and on <a href="http://fasciism.com/2017/01/04/no-escape/">Day 4</a> we removed the keybinding that exited Emacs. Now we change our setup to ensure that if we hit <code>C-x C-c</code> Emacs will restart itself, unless it is within a buffer (and frame for my configuration) created by emacsclient, in which case it will return from emacsclient.
+</p>
