@@ -1,0 +1,25 @@
+---
+layout: post
+---
+
+<p>
+For all of the minor modes that I use, I enable them globally. This may change in the future, as can anything, but for now I have no need to know which minor modes are enabled, because the answer is "All the ones I like." Diminish is a package that allows the replacement or omission of mode names in the mode line.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">use-package</span> <span style="color: #268bd2; font-weight: bold;">diminish</span>
+  <span style="color: #839496; font-weight: bold;">:ensure</span> t
+  <span style="color: #839496; font-weight: bold;">:pin</span> melpa-stable
+  <span style="color: #839496; font-weight: bold;">:config</span>
+  (<span style="color: #859900; font-weight: bold;">progn</span>
+   <span style="color: #586e75;">;; </span><span style="color: #586e75;">Diminish built-in modes we've already enabled.</span>
+   (diminish 'flyspell-mode)
+   (diminish 'visual-line-mode)
+   (diminish 'whitespace-mode)))
+</pre>
+</div>
+
+<p>
+Since we have not yet installed any new minor modes, we will diminish only those which are part of the base system. In future entries we will use <code>:diminish</code> in <code>use-package</code> to include packages in the list that Diminish affects.
+</p>
