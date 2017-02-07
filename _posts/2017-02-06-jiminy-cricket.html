@@ -1,0 +1,35 @@
+---
+layout: post
+---
+
+<p>
+Emacs keybindings are not simple. But they are discoverable and memorable, once you get past the initial shock at least. The Guide-Key package helps with that by popping up a new window displaying a list of keys available at the current moment.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">use-package</span> <span style="color: #268bd2; font-weight: bold;">guide-key</span>
+  <span style="color: #839496; font-weight: bold;">:ensure</span> t
+  <span style="color: #839496; font-weight: bold;">:pin</span> melpa-stable
+  <span style="color: #839496; font-weight: bold;">:diminish</span> guide-key-mode
+  <span style="color: #839496; font-weight: bold;">:init</span>
+  (<span style="color: #859900; font-weight: bold;">setq</span> guide-key/guide-key-sequence
+        '(<span style="color: #2aa198;">"C-c"</span> <span style="color: #2aa198;">"C-x r"</span> <span style="color: #2aa198;">"C-x 4"</span> <span style="color: #2aa198;">"C-x 5"</span> <span style="color: #2aa198;">"C-x 8"</span>))
+  <span style="color: #839496; font-weight: bold;">:config</span>
+  (guide-key-mode 1))
+</pre>
+</div>
+
+<p>
+For instance, while writing this blog I can press <code>C-x r</code> and receive a list of possibilities shown below:
+</p>
+
+
+<div class="figure">
+<p><img src="http://fasciism.com/img/2017-02-06-jiminy-cricket.png" alt="2017-02-06-jiminy-cricket.png" />
+</p>
+</div>
+
+<p>
+You'll notice that we used the <code>:diminish</code> option above, with the name of the minor mode as its value. That indicates that Diminish should omit the minor mode from the mode line entirely. Alternatively, I could have offered an abbreviation such as <code>GK</code>.
+</p>
