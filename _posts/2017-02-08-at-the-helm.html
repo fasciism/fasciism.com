@@ -3,7 +3,21 @@ layout: post
 ---
 
 <p>
-No, I couldn't just call this post "Helm". The terrible title I chose called to me, and so I acquiesced.
+No, I couldn't just call this post "Helm". The terrible title I chose called to me, and so I acquiesced. Helm is the most invasive package I've installed thus far. It replaces the majority of commands where user input is expected (e.g., <code>C-x b</code>, <code>C-x C-f</code>, <code>C-x k</code>, <code>M-x</code>) with its own version. Helms commands offer lists of candidates, shown in a pop-up window, which can be filtered, navigated, and selected. This is far more powerful than the default commands, and I find it useful.
+</p>
+
+<p>
+An instance of <code>C-x C-f</code> (<code>helm-find-files</code>) appears as follows:
+</p>
+
+
+<div class="figure">
+<p><img src="http://fasciism.com/img/2017-02-08-at-the-helm.png" alt="2017-02-08-at-the-helm.png" />
+</p>
+</div>
+
+<p>
+Now let's get that package in the system.
 </p>
 
 <div class="org-src-container">
@@ -33,7 +47,6 @@ We've bound <code>&lt;tab&gt;</code> (<code>C-i</code> in a terminal) to the com
 <p>
 Fuzzy matching has been enabled, which requires more processing of a list of candidates, but I have used this feature in the past and appreciated it. To explain be example, I can type <code>C-h v hmfm</code> looking for <code>helm-mode-fuzzy-match</code> and the list of candidates will include every variable that matches the regex <code>.*h.*m.*f.*m.*</code>, which is a lot of candidates. As always, if this annoys me later I can disable it effortlessly.
 </p>
-
 
 <p>
 When I initially installed Helm, I limited its use to <code>M-x</code>, but found that I enjoyed it a great deal. I have used Interactive Do (Ido) in earlier times, but I like Helm better. There's also Ivy which is the new kid on the block, but until Helm pisses me off someday it has my (fickle) loyalty.
