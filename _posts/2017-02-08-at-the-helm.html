@@ -1,0 +1,40 @@
+---
+layout: post
+---
+
+<p>
+No, I couldn't just call this post "Helm". The terrible title I chose called to me, and so I acquiesced.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">use-package</span> <span style="color: #268bd2; font-weight: bold;">helm</span>
+  <span style="color: #839496; font-weight: bold;">:ensure</span> t
+  <span style="color: #839496; font-weight: bold;">:pin</span> melpa-stable
+  <span style="color: #839496; font-weight: bold;">:diminish</span> helm-mode
+  <span style="color: #839496; font-weight: bold;">:bind</span> ((<span style="color: #2aa198;">"M-x"</span> . helm-M-x)
+         (<span style="color: #2aa198;">"C-x C-f"</span> . helm-find-files))
+  <span style="color: #839496; font-weight: bold;">:init</span> (<span style="color: #859900; font-weight: bold;">setq</span> helm-mode-fuzzy-match t)
+  <span style="color: #839496; font-weight: bold;">:config</span> (<span style="color: #859900; font-weight: bold;">progn</span>
+            (define-key helm-map (kbd <span style="color: #2aa198;">"&lt;tab&gt;"</span>) 'helm-execute-persistent-action)
+            (define-key helm-map (kbd <span style="color: #2aa198;">"C-i"</span>) 'helm-execute-persistent-action)
+            (helm-mode 1)))
+</pre>
+</div>
+
+<p>
+We've done three things in the <code>:config</code> section, let's take a moment to discuss each.
+</p>
+
+<p>
+We've bound <code>&lt;tab&gt;</code> (<code>C-i</code> in a terminal) to the command that (usually) expands a candidate in a list of possible completions. Normally the key for this is <code>C-j</code>, but <code>&lt;tab&gt;</code> is traditional and I don't feel that using a different binding adds any value.
+</p>
+
+<p>
+Fuzzy matching has been enabled, which requires more processing of a list of candidates, but I have used this feature in the past and appreciated it. To explain be example, I can type <code>C-h v hmfm</code> looking for <code>helm-mode-fuzzy-match</code> and the list of candidates will include every variable that matches the regex <code>.*h.*m.*f.*m.*</code>, which is a lot of candidates. As always, if this annoys me later I can disable it effortlessly.
+</p>
+
+
+<p>
+When I initially installed Helm, I limited its use to <code>M-x</code>, but found that I enjoyed it a great deal. I have used Interactive Do (Ido) in earlier times, but I like Helm better. There's also Ivy which is the new kid on the block, but until Helm pisses me off someday it has my (fickle) loyalty.
+</p>
