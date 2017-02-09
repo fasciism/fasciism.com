@@ -1,0 +1,30 @@
+---
+layout: post
+---
+
+<p>
+An unscheduled dive into the world of <a href="https://nmap.org/book/nse.html">Nmap Scripting</a> last night has caused me to need Emacs to be configured to handle Lua code. As usual, packages are there to make life better:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">use-package</span> <span style="color: #268bd2; font-weight: bold;">lua-mode</span>
+  <span style="color: #839496; font-weight: bold;">:ensure</span> t
+  <span style="color: #839496; font-weight: bold;">:pin</span> melpa-stable
+  <span style="color: #839496; font-weight: bold;">:config</span>
+  (<span style="color: #859900; font-weight: bold;">progn</span>
+    (add-hook 'lua-mode-hook (<span style="color: #859900; font-weight: bold;">lambda</span> ()
+                               (<span style="color: #859900; font-weight: bold;">setq</span> lua-indent-level 2
+                                     lua-documentation-url <span style="color: #2aa198;">"http://www.lua.org/manual/5.3/manual.html"</span>
+                                     lua-default-application <span style="color: #2aa198;">"lua5.3"</span>)))
+    (add-to-list 'auto-mode-alist '(<span style="color: #2aa198;">"\\.nse$"</span> . lua-mode))))
+</pre>
+</div>
+
+<p>
+The default indentation in Lua mode is 3 spaces, which seems insane to me, and needs to be 2 spaces to match every bit of Lua I've ever seen. The default documentation is for version 5.1, and the default interpreter on my system is version 5.2, but Nmap embeds version 5.3. The documentation URL allows me to use <code>C-c C-f</code> on a function or keyword to open its documentation in the browser. Finally, Nmap uses a non-standard file extension, <code>.nse</code> for Nmap Scripting Engine, which we need to make Emacs aware of.
+</p>
+
+<p>
+The results of last night's Nmap programming can be found <a href="https://github.com/nmap/nmap/pull/686">here</a>, if you're interested.
+</p>
