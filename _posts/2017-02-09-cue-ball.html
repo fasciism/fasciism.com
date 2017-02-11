@@ -11,13 +11,14 @@ An unscheduled dive into the world of <a href="https://nmap.org/book/nse.html">N
 <pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">use-package</span> <span style="color: #268bd2; font-weight: bold;">lua-mode</span>
   <span style="color: #839496; font-weight: bold;">:ensure</span> t
   <span style="color: #839496; font-weight: bold;">:pin</span> melpa-stable
+  <span style="color: #839496; font-weight: bold;">:mode</span>
+  <span style="color: #2aa198;">"\\.nse$"</span>
   <span style="color: #839496; font-weight: bold;">:config</span>
-  (<span style="color: #859900; font-weight: bold;">progn</span>
-    (add-hook 'lua-mode-hook (<span style="color: #859900; font-weight: bold;">lambda</span> ()
-                               (<span style="color: #859900; font-weight: bold;">setq</span> lua-indent-level 2
-                                     lua-documentation-url <span style="color: #2aa198;">"http://www.lua.org/manual/5.3/manual.html"</span>
-                                     lua-default-application <span style="color: #2aa198;">"lua5.3"</span>)))
-    (add-to-list 'auto-mode-alist '(<span style="color: #2aa198;">"\\.nse$"</span> . lua-mode))))
+  (add-hook 'lua-mode-hook
+            (<span style="color: #859900; font-weight: bold;">lambda</span> ()
+              (<span style="color: #859900; font-weight: bold;">setq</span> lua-indent-level 2
+                    lua-documentation-url <span style="color: #2aa198;">"http://www.lua.org/manual/5.3/manual.html"</span>
+                    lua-default-application <span style="color: #2aa198;">"lua5.3"</span>))))
 </pre>
 </div>
 
