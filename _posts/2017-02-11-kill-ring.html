@@ -1,0 +1,17 @@
+---
+layout: post
+---
+
+<p>
+I've been using the fabulous browse-kill-ring package for years, but I just discovered that Helm has a similar feature. I now prefer Helm's <code>show-kill-ring</code>, since it is based on filtering candidates from the kill ring using matching, just like the rest of Helm. It's also nice to pare down the number of packages in use occasionally, since the tendency is for one's configuration to grow not shrink.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(global-set-key (kbd <span style="color: #2aa198;">"M-y"</span>) 'helm-show-kill-ring)
+</pre>
+</div>
+
+<p>
+I've bound <code>M-y</code> to this feature, which is normally <code>yank-pop</code>, since if I'm looking for a different item from the kill ring than I already have, it's probably not going to be the first alternate. Creating keyboard macros using registers instead of the kill ring has taught me this.
+</p>
