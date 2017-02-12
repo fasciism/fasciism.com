@@ -1,0 +1,23 @@
+---
+layout: post
+---
+
+<p>
+One thing that occurs frequently in my Emacs usage is opening a Dired buffer based on the current context of the file I am in. For example, when editing this file I would like <code>C-x d</code> to a Dired buffer representing <code>~/.emacs.d</code>, and ensure that the buffer represents the current state of the filesystem. The default is for <code>C-x d</code> to require confirmation of the location, and to not refresh the Dired buffer if it already exists.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">defun</span> <span style="color: #268bd2;">mak::dired-here</span> ()
+  <span style="color: #2aa198;">"Make an up-to-date Dired buffer for the current location."</span>
+  (<span style="color: #859900; font-weight: bold;">interactive</span>)
+  (dired <span style="color: #2aa198;">"."</span>)
+  (revert-buffer))
+
+(global-set-key (kbd <span style="color: #2aa198;">"C-x d"</span>) 'mak::dired-here)
+</pre>
+</div>
+
+<p>
+While this is an minor change, it is satisfying.
+</p>
