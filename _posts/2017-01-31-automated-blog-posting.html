@@ -11,7 +11,7 @@ To celebrate one full month of blogging, I have written a function that will pos
 <pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">defun</span> <span style="color: #268bd2;">mak::fasciism-post-daily-blog</span> ()
   <span style="color: #2aa198;">"Posts daily blog in HTML and Org format to respective GitHub repos."</span>
   <span style="color: #586e75;">;; </span><span style="color: #586e75;">Publish the project to ensure the HTML file is on disk.</span>
-  (org-publish-project <span style="color: #2aa198;">"fasciism"</span>)
+  (org-publish-project <span style="color: #2aa198;">"fasciism"</span> t)
   <span style="color: #586e75;">;; </span><span style="color: #586e75;">Set up the common one-liner to publish a file.</span>
   (<span style="color: #859900; font-weight: bold;">let</span> ((cmd (string-join
               '(<span style="color: #2aa198;">"cd %s"</span>
@@ -22,9 +22,13 @@ To celebrate one full month of blogging, I have written a function that will pos
         (date (format-time-string <span style="color: #2aa198;">"%F"</span>)))
     <span style="color: #586e75;">;; </span><span style="color: #586e75;">Publish the HTML file.</span>
     (<span style="color: #859900; font-weight: bold;">let</span> ((file (format <span style="color: #2aa198;">"_posts/%s"</span> date)))
-      (shell-command (format cmd <span style="color: #2aa198;">"~/src/fasciism"</span> file <span style="color: #2aa198;">"html"</span>) <span style="color: #2aa198;">"*fasciism-blog-post::html*"</span>))
+      (shell-command
+       (format cmd <span style="color: #2aa198;">"~/src/fasciism"</span> file <span style="color: #2aa198;">"html"</span>)
+       <span style="color: #2aa198;">"*fasciism-blog-post::html*"</span>))
     <span style="color: #586e75;">;; </span><span style="color: #586e75;">Publish the Org file.</span>
-    (shell-command (format cmd <span style="color: #2aa198;">"~/.emacs.d"</span> date <span style="color: #2aa198;">"org"</span>) <span style="color: #2aa198;">"*fasciism-blog-post::org*"</span>)))
+    (shell-command
+     (format cmd <span style="color: #2aa198;">"~/.emacs.d"</span> date <span style="color: #2aa198;">"org"</span>)
+     <span style="color: #2aa198;">"*fasciism-blog-post::org*"</span>)))
 
 (add-hook 'midnight-mode 'mak::fasciism-post-daily-blog)
 </pre>
