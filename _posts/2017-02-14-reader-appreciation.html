@@ -1,0 +1,46 @@
+---
+layout: post
+---
+
+<p>
+Some things can only get done if you stop worrying about whether the results will matter or have actual benefits. This blog and my Master's degree are two such things. For this blog at least, I have had five different readers contact me about various posts in its seven week lifetime. I'm calling that a rousing success!
+</p>
+
+<p>
+Today's post is dedicated to the thing that I have received the most comments about: <code>use-package</code>. The excellent Use-Package library, featured heavily this month, has a number of features that I have retroactively edited into my blog.
+</p>
+
+<p>
+First, Use-Package offers a <code>:mode</code> keyword that allows you to bind a mode to a file extension:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">use-package</span> <span style="color: #268bd2; font-weight: bold;">lua-mode</span>
+  <span style="color: #839496; font-weight: bold;">:mode</span> <span style="color: #2aa198;">"\\.nse$"</span>)
+</pre>
+</div>
+
+<p>
+This is much more convenient than the alternative:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">use-package</span> <span style="color: #268bd2; font-weight: bold;">lua-mode</span>
+  <span style="color: #839496; font-weight: bold;">:config</span>
+  (add-to-list 'auto-mode-alist '(<span style="color: #2aa198;">"\\.nse$"</span> . lua-mode)))
+</pre>
+</div>
+
+<p>
+Use-Package offers an <code>:interpreter</code> keyword which is similar, but applies to the <a href="https://en.wikipedia.org/wiki/Shebang_(Unix)">shebang</a> line as opposed to the file extension. It also uses a macro for both the <code>:init</code> and <code>:config</code> keywords to allow multiple forms without the use of <code>progn</code>. Given that I've already used <code>progn</code> in those sections four times this month, that's a great feature, and I've changed earlier posts to take advantage of it.
+</p>
+
+<p>
+Another change of note is that I have also gone back and removed the <code>&lt;tab&gt;</code> completion binding from Helm. It turns out that using the right arrow key is a better experience for me. I'm still working out whether the actions offered by Helm under the <code>&lt;tab&gt;</code> menu are particularly useful for me.
+</p>
+
+<p>
+Finally, I just want to say that everyone who has contacted me has been wonderful and helpful. I honestly look forward to future emails/tweets pointing out errors and simplifications in my posts.
+</p>
