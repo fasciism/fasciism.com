@@ -1,0 +1,167 @@
+---
+layout: post
+---
+
+<p>
+For me, a great feature of Emacs is narrowing, and a indispensable feature of Gnus is limiting. I'd like to have the same feature, or a close approximation with similar bindings, in Dired. I've waited this long to implement it because I wanted to have a stack just like Gnus.
+</p>
+
+<p>
+First, we need to create a buffer-local variable to represent the stack of limits that have been applied.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(add-hook 'dired-mode-hook
+          (<span style="color: #859900; font-weight: bold;">lambda</span> ()
+            (<span style="color: #859900; font-weight: bold;">defvar-local</span> <span style="color: #268bd2;">mak::dired-limit-stack</span> nil)))
+</pre>
+</div>
+
+<p>
+Next, we create a macro. I've never made a macro before, but it seems to work. The reason I have made it is that Undo-Tree provides two useful functions: <code>undo-tree-save-to-register</code> and <code>undo-tree-restore-state-from-register</code>. Registers are extremely useful, and are global, so I don't want my code to clobber any of their values. So I have made the <code>with-register</code> macro that permits me to borrow a register for the duration of the sexp.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">defmacro</span> <span style="color: #268bd2;">with-register</span> (register <span style="color: #b58900;">&amp;rest</span> body)
+  <span style="color: #2aa198;">"Execute the forms in body without allowing contents of register to change."</span>
+  (<span style="color: #859900; font-weight: bold;">let</span> ((original (gensym))
+        (result (gensym)))
+    `(<span style="color: #859900; font-weight: bold;">let</span> ((,result nil))
+       (<span style="color: #859900; font-weight: bold;">setq</span> ,original (get-register ,register))
+       (<span style="color: #859900; font-weight: bold;">setq</span> ,result (<span style="color: #859900; font-weight: bold;">progn</span> ,@body))
+       (set-register ,register ,original)
+       ,result)))
+</pre>
+</div>
+
+<p>
+Since this is the first register I've ever made, there are a few things I'd like to discuss. Macros generate code, and so it is bad form to use static variable names anywhere in the generated code. The solution for this is <code>gensym</code>:
+</p>
+
+<p class="verse">
+(gensym &amp;optional PREFIX)<br  />
+<br  />
+Generate a new uninterned symbol.<br  />
+The name is made by appending a number to PREFIX, default "G".<br  />
+</p>
+
+<p>
+If you're a Lisp enthusiast, I recommend you go read about <code>gensym</code> alternatives like fexpr and hygienic macros, which are much fancier than what we're doing here. Another odd thing we're doing here is saving the result of evaluating the <code>body</code>, this is because this macro could conceivably used in some way that depends on its value, so to avoid surprises we have made that possible. Finally, we used the backquote syntax, and its children comma and splice. When generating code, especially with <code>gensym</code>, you need to have control over evaluation to allow you to determine how many levels of dereferencing you're using. This is done by using the backquote, preventing evaluation of the sexp to which it is applied. You'll notice that after the initial <code>let</code> establishing our dynamically-generated symbol names, we never again use <code>original</code> or <code>result</code> without a comma to give it a dereference. This ensures that the code we're generating doesn't contain the name <code>result</code> or <code>original</code>, but instead the <code>G</code>-prefixed symbol name. Last of all, the =,@= splice notation unpacks the list, promoting all its elements to the level at which the =,@= was called.
+</p>
+
+<p>
+That was a lot of words, so here's an example:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(macroexpand
+  '(with-register ?a
+     (set-register ?a <span style="color: #2aa198;">"Monkeys"</span>)
+     (message (get-register ?a))))
+</pre>
+</div>
+
+<p>
+Executing the <code>macroexpand</code> above generates the following code, which has been reformatted for readability:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">let</span> ((G177 nil))
+  (<span style="color: #859900; font-weight: bold;">setq</span> G176 (get-register 97))
+  (<span style="color: #859900; font-weight: bold;">setq</span> G177 (<span style="color: #859900; font-weight: bold;">progn</span>
+               (set-register 97 <span style="color: #2aa198;">"Monkeys"</span>)
+               (message ...)))
+  (set-register 97 G176)
+  G177)
+</pre>
+</div>
+
+<p>
+Looks good! Next, we need to create the function that applies a new limit. This function must save the current buffer state to the stack, and then execute the limiting action. Unfortunately, marks are not preserved across limiting actions, but are restored when the limit is popped.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">require</span> '<span style="color: #268bd2; font-weight: bold;">undo-tree</span>)
+(<span style="color: #859900; font-weight: bold;">defun</span> <span style="color: #268bd2;">mak::dired-push-limit</span> (dired-mark-function)
+  <span style="color: #2aa198;">"Limit the buffer to display a subset of files and directories."</span>
+  (<span style="color: #859900; font-weight: bold;">interactive</span>)
+  <span style="color: #586e75;">;; </span><span style="color: #586e75;">Save buffer state prior to applying limit.</span>
+  (<span style="color: #859900; font-weight: bold;">with-register</span> ?q
+    (undo-tree-save-state-to-register ?q)
+    (add-to-list 'mak::dired-limit-stack (get-register ?q)))
+  <span style="color: #586e75;">;; </span><span style="color: #586e75;">Clear all marks.</span>
+  (dired-unmark-all-marks)
+  <span style="color: #586e75;">;; </span><span style="color: #586e75;">Mark files we wish to view.</span>
+  (call-interactively dired-mark-function)
+  <span style="color: #586e75;">;; </span><span style="color: #586e75;">Invert which files are marked.</span>
+  (dired-toggle-marks)
+  <span style="color: #586e75;">;; </span><span style="color: #586e75;">Remove all marked files.</span>
+  (dired-do-kill-lines))
+</pre>
+</div>
+
+<p>
+Now we perform the pop, which is pretty easy. We just need to have a guard against the stack being empty, and the rest is restoring state.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">defun</span> <span style="color: #268bd2;">mak::dired-pop-limit</span> ()
+  <span style="color: #2aa198;">"Pop the most recent limit from the dired-limit-ring."</span>
+  (<span style="color: #859900; font-weight: bold;">interactive</span>)
+  (<span style="color: #859900; font-weight: bold;">unless</span> mak::dired-limit-stack
+    (<span style="color: #cb4b16; font-weight: bold;">user-error</span> <span style="color: #2aa198;">"No limit currently is in effect."</span>))
+  <span style="color: #586e75;">;; </span><span style="color: #586e75;">Restore buffer state to before we applied the limit.</span>
+  (<span style="color: #859900; font-weight: bold;">with-register</span> ?q
+    (set-register ?q (<span style="color: #859900; font-weight: bold;">pop</span> mak::dired-limit-stack))
+    (undo-tree-restore-state-from-register ?q)))
+</pre>
+</div>
+
+<p>
+We finish things off by binding to keys that seem sensible.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">require</span> '<span style="color: #268bd2; font-weight: bold;">dired-x</span>)
+
+<span style="color: #586e75;">;; </span><span style="color: #586e75;">These bindings correspond to the default "*" bindings in Dired.</span>
+(define-key dired-mode-map (kbd <span style="color: #2aa198;">"/ ."</span>)
+  (<span style="color: #859900; font-weight: bold;">lambda</span> ()
+    (<span style="color: #859900; font-weight: bold;">interactive</span>)
+    (mak::dired-push-limit 'dired-mark-extension)))
+(define-key dired-mode-map (kbd <span style="color: #2aa198;">"/ /"</span>)
+  (<span style="color: #859900; font-weight: bold;">lambda</span> ()
+    (<span style="color: #859900; font-weight: bold;">interactive</span>)
+    (mak::dired-push-limit 'dired-mark-directories)))
+(define-key dired-mode-map (kbd <span style="color: #2aa198;">"/ *"</span>)
+  (<span style="color: #859900; font-weight: bold;">lambda</span> ()
+    (<span style="color: #859900; font-weight: bold;">interactive</span>)
+    (mak::dired-push-limit 'dired-mark-executables)))
+(define-key dired-mode-map (kbd <span style="color: #2aa198;">"/ %"</span>)
+  (<span style="color: #859900; font-weight: bold;">lambda</span> ()
+    (<span style="color: #859900; font-weight: bold;">interactive</span>)
+    (mak::dired-push-limit 'dired-mark-files-regexp)))
+(define-key dired-mode-map (kbd <span style="color: #2aa198;">"/ g"</span>)
+  (<span style="color: #859900; font-weight: bold;">lambda</span> ()
+    (<span style="color: #859900; font-weight: bold;">interactive</span>)
+    (mak::dired-push-limit 'dired-mark-files-containing-regexp)))
+(define-key dired-mode-map (kbd <span style="color: #2aa198;">"/ s"</span>)
+  (<span style="color: #859900; font-weight: bold;">lambda</span> ()
+    (<span style="color: #859900; font-weight: bold;">interactive</span>)
+    (mak::dired-push-limit 'dired-mark-files-containing-regexp)))
+
+<span style="color: #586e75;">;; </span><span style="color: #586e75;">This binding is straight out of Gnus.</span>
+(define-key dired-mode-map (kbd <span style="color: #2aa198;">"/ w"</span>) 'mak::dired-pop-limit)
+</pre>
+</div>
+
+<p>
+It's not perfect, and the inability to preserve marks when applying more limits is unfortunate, but I'm quite happy with this for now. After writing this, I discovered <a href="https://github.com/fuco1/dired-hacks">Dired-Hacks</a> which implements a very similar feature called <a href="https://github.com/fuco1/dired-hacks#dired-filter">dired-filter.</a> As I use Dired more, I may add that to my configuration, but for now my cheap hack works for me.
+</p>
