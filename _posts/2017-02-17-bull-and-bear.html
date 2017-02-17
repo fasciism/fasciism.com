@@ -1,0 +1,26 @@
+---
+layout: post
+---
+
+<p>
+It's amazing how choosing the right keybinding for a feature can change your opinion of that feature. I've thought Expand-Region was neat for a long time, and it has been in my configuration at various points, but I've never used it on a regular basis, until now.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">use-package</span> <span style="color: #268bd2; font-weight: bold;">expand-region</span>
+  <span style="color: #839496; font-weight: bold;">:ensure</span> t
+  <span style="color: #839496; font-weight: bold;">:pin</span> melpa-stable
+  <span style="color: #839496; font-weight: bold;">:bind</span>
+  (<span style="color: #2aa198;">"C-&lt;prior&gt;"</span> . er/expand-region)
+  (<span style="color: #2aa198;">"C-&lt;next&gt;"</span> . er/contract-region))
+</pre>
+</div>
+
+<p>
+On both my laptop keyboard and my Kinesis Advantage, the <code>Page Up</code> and <code>Page Down</code> keys are very accessible. At the time of me writing this, I have used <code>er/expand-region</code> over 400 times in the last two weeks, which I'd estimate is an order of magnitude more than the entire time before that.
+</p>
+
+<p>
+Here's the great <a href="http://emacsrocks.com/e09.html">Emacs Rocks</a> video demonstrating Expand-Region.
+</p>
