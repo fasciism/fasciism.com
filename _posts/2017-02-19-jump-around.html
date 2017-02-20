@@ -1,0 +1,28 @@
+---
+layout: post
+---
+
+<p>
+Another package that I've installed in the past but rarely used was Ace-Jump-Mode. The problem is that I never found a good keybinding for it, and so I rarely remembered to use it. Since Avy has carried on where Ace-Jump-Mode left off, I'm using it instead:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">use-package</span> <span style="color: #268bd2; font-weight: bold;">avy</span>
+  <span style="color: #839496; font-weight: bold;">:ensure</span> t
+  <span style="color: #839496; font-weight: bold;">:pin</span> melpa-stable
+  <span style="color: #839496; font-weight: bold;">:bind</span>
+  (<span style="color: #2aa198;">"M-`"</span> . avy-goto-char-2)
+  <span style="color: #839496; font-weight: bold;">:config</span>
+  (avy-setup-default)
+  (<span style="color: #859900; font-weight: bold;">setq</span> avy-keys '(?e ?t ?u ?h ?o ?n ?i ?d)))
+</pre>
+</div>
+
+<p>
+<a href="http://emacsrocks.com/e10.html">Emacs Rocks</a> has a great introduction to the idea of Avy, although it talks about Ace-Jump-Mode specifically. One important thing about Avy is that it defaults to Qwerty home row shortcuts for the candidates, but I prefer Dvorak home row shortcuts. This is easily remedied by altering <code>avy-keys</code>.
+</p>
+
+<p>
+I spent some time using <code>avy-goto-char</code> at first, but quickly changed to <code>avy-goto-char-2</code>. The problem is that if you only use one character, then there are many, many choices. You then have to look at what Avy has named the candidate your were intending, then read and type two letters. I found it much better to start by reading two characters and then typing them, then (usually) only having to read and type another character to indicate the selection. YMMV.
+</p>
