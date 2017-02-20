@@ -1,0 +1,78 @@
+---
+layout: post
+---
+
+<p>
+I literally <i>just</i> got the joke of the name while writing this entry. Sometimes I'm a little late to the party.
+</p>
+
+<p>
+Anyways, Gnus is one of the many email and news readers available in Emacs. While others are reputed to be much more sane, straightforward, and easy to configure, I've been planning to switch from Mutt to Gnus for many years now. Some of the people whose opinions I respect espouse Gnus, so I'm going to try to live with it. Fingers crossed!
+</p>
+
+<p>
+The first and most obvious thing that we want to do with a newsreader is define my identity. While I have a few identities I'd like to use with Gnus, my primary one is:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">setq</span> user-mail-address <span style="color: #2aa198;">"mak@kolybabi.com"</span>
+      user-full-name <span style="color: #2aa198;">"Mak Kolybabi"</span>)
+</pre>
+</div>
+
+<p>
+And with that, I realize that this is the first time I've named myself. <a href="http://mogigoma.com/">Hi, I'm Mak!</a> I like long walks and configurable systems. Next we need to tell the system how to send email.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">setq</span> send-mail-function 'smtpmail-send-it
+      smtpmail-smtp-server <span style="color: #2aa198;">"mail.kolybabi.com"</span>
+      smtpmail-stream-type 'starttls
+      smtpmail-smtp-service 587)
+</pre>
+</div>
+
+<p>
+Now that we can send email, it is critical for me to not be able to <i>easily</i> send mail accidentally. I'm the kind of person that has his IRSSI (IRC client) configured to require I hold <code>M-Enter</code> to send, for safety. Let's require a confirmation before sending an email:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">setq</span> message-confirm-send t)
+</pre>
+</div>
+
+<p>
+We can test sending an email with <code>C-x m</code>, which opens a buffer populated with the fields of an email. Once that test has confirmed that I can send email, I'll configure the reading of email.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">setq</span> gnus-select-method
+      '(nnimap <span style="color: #2aa198;">"kolybabi"</span>
+               (nnimap-address <span style="color: #2aa198;">"mail.kolybabi.com"</span>)
+               (nnimap-server-port <span style="color: #2aa198;">"imaps"</span>)
+               (nnimap-stream ssl)
+               (nnmail-expiry-target <span style="color: #2aa198;">"nnimap+kolybabi:trash"</span>)
+               (nnmail-expiry-wait immediate)))
+</pre>
+</div>
+
+<p>
+The credentials to log into SMTP and IMAP are stored in a separate file, <code>~/.authinfo</code>, and look like this:
+</p>
+
+<pre class="example">
+machine mail.kolybabi.com login mak.kolybabi password hunter2 port imaps
+machine mail.kolybabi.com login mak.kolybabi password hunter2 port 587
+</pre>
+
+<p>
+Don't fret, my password isn't really <a href="http://bash.org/?244321">hunter2</a>.
+</p>
+
+<p>
+In retrospect, that wasn't much to configure at all. I'm sure there will be much more tweaking later, especially since I'd like to add certificate pinning for my mail server for additional protection, and move my credentials into <code>~/.authinfo.gpg</code>. But for now, this setup is <i>functional</i>, even if it's not yet <i>comfortable</i>.
+</p>
