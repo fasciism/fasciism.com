@@ -28,7 +28,14 @@ Once that configuration is in place, I reloaded Gnus by quitting it and re-enter
 </p>
 
 <p>
-By hitting <code>&lt;enter&gt;</code> on  <code>nntp:news.gwene.org</code> I can browse the list of newsgroups available on the server, and hit <code>u</code> (==) to subscribe.
+By hitting <code>&lt;enter&gt;</code> on  <code>nntp:news.gwene.org</code> I can browse the list of newsgroups available on the server, and to toggle subscribing I can hit <code>u</code> (<code>gnus-group-unsubscribe-group</code>):
+</p>
+
+<p class="verse">
+(gnus-group-unsubscribe-group GROUP &amp;optional LEVEL SILENT)<br  />
+<br  />
+Toggle subscription to GROUP.<br  />
+Killed newsgroups are subscribed. If SILENT, don’t try to update the group line.<br  />
 </p>
 
 <p>
