@@ -1,0 +1,56 @@
+---
+layout: post
+---
+
+<p>
+I have used Newsbeuter happily for many years, since it is the Mutt of feed readers, and I love Mutt. However, in moving my life to Emacs I looked at some Emacs feed readers. I discovered Elfeed, and enjoyed it for a while. I've also attempted to use the RSS feed reader built into Gnus (via <code>G R</code>), but I really didn't like that. So I'm currently using Gwene as an NNTP source for Gnus. Gwene translates RSS and Atom feeds on the Internet into Newsgroups. This lowers the burden on individual sites, and has the benefit of not disclosing your IP to the sites.
+</p>
+
+<p>
+Setting up Gwene was really easy:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(add-to-list 'gnus-secondary-select-methods '(nntp <span style="color: #2aa198;">"news.gwene.org"</span>))
+</pre>
+</div>
+
+<p>
+Once that configuration is in place, I reloaded Gnus by quitting it and re-entering it for good measure. Then I hit <code>^</code> (<code>gnus-group-enter-server-mode</code>) which brought up the server buffer:
+</p>
+
+<p class="verse">
+{nnfolder:archive} (opened)<br  />
+{nndraft:} (opened)<br  />
+{nntp:news.gwene.org} (opened)<br  />
+{nnimap:kolybabi} (opened)<br  />
+</p>
+
+<p>
+By hitting <code>&lt;enter&gt;</code> on  <code>nntp:news.gwene.org</code> I can browse the list of newsgroups available on the server, and hit <code>u</code> (==) to subscribe.
+</p>
+
+<p>
+These are the newsgroups to which I am currently subscribed:
+</p>
+
+<p class="verse">
+nntp+news.gwene.org:gmane.comp.security.langsec<br  />
+nntp+news.gwene.org:gmane.comp.security.nmap.devel<br  />
+nntp+news.gwene.org:gmane.comp.security.nmap.general<br  />
+nntp+news.gwene.org:gmane.org.hackerspaces.skullspace.announce<br  />
+nntp+news.gwene.org:gmane.org.hackerspaces.skullspace.general<br  />
+nntp+news.gwene.org:gwene.com.blogspot.lcamtuf<br  />
+nntp+news.gwene.org:gwene.com.cryptography.engineering.blog<br  />
+nntp+news.gwene.org:gwene.com.devttys0<br  />
+nntp+news.gwene.org:gwene.com.fasciism<br  />
+nntp+news.gwene.org:gwene.electronics.bunniestudios.blog<br  />
+nntp+news.gwene.org:gwene.net.boingboing<br  />
+nntp+news.gwene.org:gwene.net.might.matt.articles<br  />
+nntp+news.gwene.org:gwene.net.music4program<br  />
+nntp+news.gwene.org:gwene.org.chneukirchen.blog<br  />
+nntp+news.gwene.org:gwene.org.chneukirchen.trivium.index<br  />
+nntp+news.gwene.org:gwene.org.emacsen.planet<br  />
+nntp+news.gwene.org:gwene.org.jwz.blog<br  />
+</p>
