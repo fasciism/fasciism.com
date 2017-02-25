@@ -1,0 +1,21 @@
+---
+layout: post
+---
+
+<p>
+I've wanted to try Company-Mode for a while, so I enabled it today. It's one of the rare packages available in ELPA as opposed to MELPA. Company is a completion framework that offers a popup list after a delay (or immediately when called) in the current buffer.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">use-package</span> <span style="color: #268bd2; font-weight: bold;">company</span>
+  <span style="color: #839496; font-weight: bold;">:ensure</span> t
+  <span style="color: #839496; font-weight: bold;">:pin</span>
+  <span style="color: #839496; font-weight: bold;">:config</span>
+  (add-hook 'after-init-hook 'global-company-mode))
+</pre>
+</div>
+
+<p>
+That's all the configuration it needs to start. From this point on I'll have popups whenever there are several options for a prefix that I've typed, or a dim suffix inline.
+</p>
