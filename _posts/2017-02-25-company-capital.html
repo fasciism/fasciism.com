@@ -1,0 +1,17 @@
+---
+layout: post
+---
+
+<p>
+One day into using Company and I admit that I'm enjoying it a great deal. One issue that hit me in the first day was that configuration files had completion suggestions, but capitalization of keywords was not being maintained. It turns out that Company maintains a list of modes in which it should preserve capitalization. So if you spend your days fiddling with configuration files, like I do, the following tweak is required:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(add-to-list 'company-dabbrev-code-modes 'conf-mode)
+</pre>
+</div>
+
+<p>
+I suspect I'll find more modes to add to <code>company-dabbrev-code-modes</code> over time.
+</p>
