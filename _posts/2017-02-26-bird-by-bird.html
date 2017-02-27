@@ -1,0 +1,80 @@
+---
+layout: post
+---
+
+<p>
+Continuing with my plan to make 2017 the Year of Structure, I need to start using Org-mode beyond this blog. I've been chasing the perfect Org-mode setup, putting off using it until I've designed my system fully. That's dumb, I'm dumb, time to get started. As Anne Lamot teaches, I need to embrace "Shitty First Drafts".
+</p>
+
+<p>
+I'm going to make <code>~/org</code> the base directory for all my Org-mode usage. I realize that this is the default value, but I find comfort in being explicit at this point.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">setq</span> org-directory <span style="color: #2aa198;">"~/org"</span>)
+</pre>
+</div>
+
+<p>
+The next thing I want to do is make a keymap. Many people seem to give Org-mode features top level keybindings such as <code>C-c c</code> for capturing. I don't feel the need to do that (yet?), so I've decided to use a keymap bound to <code>C-c o</code>. I could bind things globally without using a keymap, but the keymap feels like the right choice.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">setq</span> mak::org-mode-map (make-sparse-keymap))
+(global-set-key (kbd <span style="color: #2aa198;">"C-c o"</span>) mak::org-mode-map)
+</pre>
+</div>
+
+<p>
+I feel like the obvious first feature to set up is Capture. Org-mode's capture facility pops up a buffer in which I can choose a (user-defined) template, and then fill in whatever I want captured. I can then chord <code>C-c C-c</code>, the general "do what I mean" command in Org-mode, and the information I've input will be whisked away and saved safely, returning me to whatever I was doing.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(define-key mak::org-mode-map (kbd <span style="color: #2aa198;">"c"</span>) 'org-capture)
+</pre>
+</div>
+
+<p>
+I currently have a system that I've been using for a year or two where I send myself emails such as <code>mak+capture@kolybabi.com</code> and then manage my captures/todos as a series of email messages. While I don't have a system to properly manage those emails in my current configuration, I plan to keep that capture method and integrate Gnus and Org-mode to make it work.
+</p>
+
+<p>
+For the saving of these captures, I'd like the file to be named less generically than the default of <code>notes.org</code>:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">setq</span> org-default-notes-file (concat org-directory <span style="color: #2aa198;">"/capture.org"</span>))
+</pre>
+</div>
+
+<p>
+When chording <code>C-c o c</code> from this blog post, I now see a buffer with the following:
+</p>
+
+<p class="verse">
+Select a capture template<br  />
+<code>=======================</code><br  />
+<br  />
+[t]     Task<br  />
+&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;&#x2014;<br  />
+[C]     Customize org-capture templates<br  />
+[q]     Abort<br  />
+</p>
+
+<p>
+And after hitting <code>t</code> to create a generic task, I get the following in a temporary buffer:
+</p>
+
+<pre class="example">
+** TODO
+   [2017-02-26 Sun]
+   [[file:~/.emacs.d/2017-02-26-bird-by-bird.org]]
+</pre>
+
+<p>
+Now I have a way to effortlessly capture when I'm in Emacs, but not elsewhere. So there we go, I've started using Org-mode in earnest. Time to figure out what <span class="underline">doesn't</span> work for me, and fix that. How long could that process <span class="underline">possibly</span> take&#x2026;?
+</p>
