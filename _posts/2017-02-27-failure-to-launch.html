@@ -1,0 +1,63 @@
+---
+layout: post
+---
+
+<p>
+I have recently come across a useful addition for my Eshell prompt. I have a love of a simple prompt, but one thing I think it is worthwhile to add is a warning when the previous command exited with a non-zero exit status.
+</p>
+
+<p>
+This will be the first time we replace the definition of a function. Thanks to Lisp being great, this is effortless.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp"><span style="color: #586e75;">;;</span><span style="color: #586e75;">(require 'esh-io)</span>
+(<span style="color: #859900; font-weight: bold;">defun</span> <span style="color: #268bd2;">mak::last-command-status</span> ()
+  (<span style="color: #859900; font-weight: bold;">interactive</span>)
+  (<span style="color: #859900; font-weight: bold;">let</span> ((c eshell-last-command-status))
+    (<span style="color: #859900; font-weight: bold;">when</span> (<span style="color: #859900; font-weight: bold;">and</span> c (not (eq 0 c)))
+      (format <span style="color: #2aa198;">"?%d "</span> c))))
+
+(<span style="color: #859900; font-weight: bold;">defun</span> <span style="color: #268bd2;">mak::eshell-prompt</span> ()
+  (<span style="color: #859900; font-weight: bold;">interactive</span>)
+  (concat (<span style="color: #859900; font-weight: bold;">if</span> (not (eq 0 (current-column)))
+              <span style="color: #2aa198;">"\n"</span>
+            <span style="color: #2aa198;">""</span>)
+          (mak::last-command-status)
+          (mak::ghost-or-percent)
+          <span style="color: #2aa198;">" "</span>))
+</pre>
+</div>
+
+<p>
+Then we update the prompt regex to match our new prompt format:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">setq</span> eshell-prompt-regexp (format <span style="color: #2aa198;">"^\(?[0-9]+ \)\?%s "</span> (mak::ghost-or-percent)))
+</pre>
+</div>
+
+<p>
+And take the new prompt for a spin.
+</p>
+
+<pre class="example">
+👻 false
+?1 👻 false
+?1 👻 true
+👻 true
+👻 false
+?1 👻 true
+👻
+</pre>
+
+<p>
+There we go. I don't need the current directory in the prompt, because I can find that in a heartbeat. I don't need the current Git branch in the prompt, because I do everything with Magit. This will be useful in that while I can find the information if I need, checking the exit status is something I never think to do.
+</p>
+
+<p>
+One glitch that testing revealed is that if I run a command that exits with a non-zero status, kill the Eshell buffer, and create a new Eshell buffer, the prompt will be <code>?1 👻</code>. This indicates that Eshell does not clear the <code>eshell-last-command-status</code> variable on initialization. I'm not going to fix this in my code, because I feel like it should be fixed in Eshell. Maybe I'll submit a bug report for it when I have some free time.
+</p>
