@@ -1,0 +1,77 @@
+---
+layout: post
+---
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp"><span style="color: #586e75;">;;; </span><span style="color: #586e75;">-*- lexical-binding: t; -*-</span>
+</pre>
+</div>
+
+<p>
+Let's finish off February with something I'm trying to make a part of my life: workflows. You can call them checklists, but I'm going to stick with the more generic term of workflow since I don't want to narrow how I think about their usage. The majority of tasks in my life are repetitive. What I want is a simple way of writing an Org-mode file, dropping it a specific directory, and being able to create an instance of that template that Org will operate on.
+</p>
+
+<p>
+Let's start by creating the workflow template instantiation function, and binding it to my Org-mode keymap:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">defvar</span> <span style="color: #268bd2;">org-workflow-dir</span>
+  (concat org-directory <span style="color: #2aa198;">"/workflows"</span>)
+  <span style="color: #2aa198;">"Directory in which my workflows are stored."</span>)
+
+(<span style="color: #859900; font-weight: bold;">defun</span> <span style="color: #268bd2;">mak::org-new-workflow</span> (template)
+  (<span style="color: #859900; font-weight: bold;">interactive</span>
+   <span style="color: #586e75;">;; </span><span style="color: #586e75;">Choose a workflow template.</span>
+   (list (read-file-name <span style="color: #2aa198;">"Workflow: "</span> (concat org-workflow-dir <span style="color: #2aa198;">"/templates/"</span>))))
+  <span style="color: #586e75;">;; </span><span style="color: #586e75;">Generate the template's file name.</span>
+  (<span style="color: #859900; font-weight: bold;">let*</span> ((datetime (format-time-string <span style="color: #2aa198;">"%F::%T"</span>))
+         (filename (file-name-nondirectory template))
+         (workflow (format <span style="color: #2aa198;">"%s/active/%s::%s"</span> org-workflow-dir datetime filename)))
+    (copy-file template workflow)
+    (find-file workflow)))
+
+(define-key mak::org-mode-map (kbd <span style="color: #2aa198;">"w"</span>) 'mak::org-new-workflow)
+</pre>
+</div>
+
+<p>
+Now when I chord <code>C-c o w</code>, I will be able to choose a workflow template with Helm, and a new file matching the current date and time, suffixed with the template's file name, will be created, 'activated', and opened in a buffer. By activated, I mean that the template will exposed to Org-mode's Agenda. An example file name is <code>2017-02-28::01:06:33::month-end.org</code>.
+</p>
+
+<p>
+We need to make Agenda aware of where the Org-mode files I want it to use are kept. For now I will include <span class="underline">all</span> files in my <code>~/org</code> directory, since there is no reason to do otherwise. I suspect that I will eventually reach a point where the number of files Org is processing will require me to archive some files, but I'm not there yet. And when I do reach that point, creating a way to archive a file to <code>~/org/workflows/archive</code> should be easy.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">setq</span> org-agenda-files
+      (list org-directory
+            (concat org-workflow-dir <span style="color: #2aa198;">"/active"</span>)))
+</pre>
+</div>
+
+<p>
+Finally, I want to create two Agenda views: calendar and tasks.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">defun</span> <span style="color: #268bd2;">mak::org-agenda-calendar</span> (<span style="color: #b58900;">&amp;optional</span> arg)
+  (<span style="color: #859900; font-weight: bold;">interactive</span> <span style="color: #2aa198;">"P"</span>)
+  (org-agenda arg <span style="color: #2aa198;">"a"</span>))
+
+(<span style="color: #859900; font-weight: bold;">defun</span> <span style="color: #268bd2;">mak::org-agenda-tasks</span> (<span style="color: #b58900;">&amp;optional</span> arg)
+  (<span style="color: #859900; font-weight: bold;">interactive</span> <span style="color: #2aa198;">"P"</span>)
+  (org-agenda arg <span style="color: #2aa198;">"t"</span>))
+
+(define-key mak::org-mode-map (kbd <span style="color: #2aa198;">"a"</span>) 'mak::org-agenda-calendar)
+(define-key mak::org-mode-map (kbd <span style="color: #2aa198;">"t"</span>) 'mak::org-agenda-tasks)
+</pre>
+</div>
+
+<p>
+As usual, there's more to do here, but the perfect is the enemy of the good. This is usable, and does what I need for now.
+</p>
