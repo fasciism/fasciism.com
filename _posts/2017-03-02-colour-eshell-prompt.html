@@ -1,0 +1,33 @@
+---
+layout: post
+---
+
+<p>
+I had never considered before today how to change the colour of some text. I had messed with applying faces to fonts before when making major modes, but I had never looked into styling a specific string. It turns out to be easy:
+</p>
+
+<p>
+#!+BEGIN<sub>VERSE</sub>
+(propertize STRING &amp;rest PROPERTIES)
+</p>
+
+<p>
+Return a copy of STRING with text properties added.
+First argument is the string to copy.
+Remaining arguments form a sequence of PROPERTY VALUE pairs for text properties to add to the result.
+#!+END<sub>VERSE</sub>
+</p>
+
+<p>
+We could leave <code>mak::last-command-status</code> alone, and then advise the function to manipulate its output, but that will inevitably confuse me some day when I am debugging something. So we'll just add a simple <code>propertize</code> call to make the exit code of a command even more visible:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">defun</span> <span style="color: #268bd2;">mak::last-command-status</span> ()
+  (<span style="color: #859900; font-weight: bold;">interactive</span>)
+  (<span style="color: #859900; font-weight: bold;">let</span> ((c eshell-last-command-status))
+    (<span style="color: #859900; font-weight: bold;">when</span> (<span style="color: #859900; font-weight: bold;">and</span> c (not (eq 0 c)))
+      (propertize (format <span style="color: #2aa198;">"?%d "</span> c) 'face '(<span style="color: #839496; font-weight: bold;">:foreground</span> <span style="color: #2aa198;">"red"</span>)))))
+</pre>
+</div>
