@@ -1,0 +1,31 @@
+---
+layout: post
+---
+
+<p>
+I tend to ignore my Gmail account since I only use it for Google/Android-related things. I should probably pay more attention to it, and so I've decided to add it to my Gnus setup. Whether this is a good idea, or whether it would be preferable to instead forward all email from Gmail to my personal mail server is a problem for Future Me. That guy can handle anything.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(add-to-list 'gnus-secondary-select-methods
+             '(nnimap <span style="color: #2aa198;">"gmail"</span>
+                      (nnimap-address <span style="color: #2aa198;">"imap.gmail.com"</span>)
+                      (nnimap-server-port <span style="color: #2aa198;">"imaps"</span>)
+                      (nnimap-stream ssl)
+                      (nnmail-expiry-target <span style="color: #2aa198;">"nnimap+gmail:[Gmail]/Trash"</span>)
+                      (nnmail-expiry-wait immediate)))
+</pre>
+</div>
+
+<p>
+This configuration didn't work for me at first, constantly giving me an authentication error, despite copying-and-pasting my password from my password manager. It turns out that due to my use of two-factor authentication, I needed to create an application-specific password for Gnus to access Gmail. Slightly annoying, but I still highly recommend password managers and two-factor authentication.
+</p>
+
+<p>
+I don't have a need to send anything from Gmail, yet, so we'll stick with IMAP for now.
+</p>
+
+<p>
+Also, collective nouns amuse me.
+</p>
