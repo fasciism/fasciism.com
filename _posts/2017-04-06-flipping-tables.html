@@ -1,0 +1,27 @@
+---
+layout: post
+---
+
+<p>
+The default style of the Gnus summary buffers has been bugging me, so I've changed it to something more palatable.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">setq</span> gnus-user-date-format-alist
+      '(((gnus-seconds-today)           . <span style="color: #2aa198;">"Today"</span>)
+        ((+ 86400 (gnus-seconds-today)) . <span style="color: #2aa198;">"Yesterday"</span>)
+        (604800                         . <span style="color: #2aa198;">"%A"</span>)
+        ((gnus-seconds-month)           . <span style="color: #2aa198;">"%A %d"</span>)
+        ((gnus-seconds-year)            . <span style="color: #2aa198;">"%B %d"</span>)
+        (t                              . <span style="color: #2aa198;">"%Y-%m-%d"</span>)))
+
+<span style="color: #586e75;">;; </span><span style="color: #586e75;">U: Unread indicator</span>
+<span style="color: #586e75;">;; </span><span style="color: #586e75;">R: Mark</span>
+<span style="color: #586e75;">;; </span><span style="color: #586e75;">z: Indicates +/- for above/below default score</span>
+<span style="color: #586e75;">;; </span><span style="color: #586e75;">f: Sender</span>
+<span style="color: #586e75;">;; </span><span style="color: #586e75;">B: Tree display</span>
+<span style="color: #586e75;">;; </span><span style="color: #586e75;">s: Subject if root of thread or different from root</span>
+(<span style="color: #859900; font-weight: bold;">setq</span> gnus-summary-line-format <span style="color: #2aa198;">"%U%R%z  %-17,17&amp;user-date;  %-40,40f %B%s\n"</span>)
+</pre>
+</div>
