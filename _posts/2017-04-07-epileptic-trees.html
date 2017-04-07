@@ -1,0 +1,119 @@
+---
+layout: post
+---
+
+<p>
+While I don't always have threading enabled in my email, when I do it's nice to have something pretty. So let's start by defining a seasonal symbol for the root of the tree.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">defun</span> <span style="color: #268bd2;">mak::seasonal-tree</span> ()
+  (<span style="color: #859900; font-weight: bold;">interactive</span>)
+  (<span style="color: #859900; font-weight: bold;">let*</span> ((month (format-time-string <span style="color: #2aa198;">"%b"</span>))
+         (tree (<span style="color: #859900; font-weight: bold;">cond</span> ((equal month <span style="color: #2aa198;">"Jan"</span>) ?&#127794;)
+                     ((equal month <span style="color: #2aa198;">"Feb"</span>) ?&#127794;)
+                     ((equal month <span style="color: #2aa198;">"Mar"</span>) ?&#127793;)
+                     ((equal month <span style="color: #2aa198;">"Apr"</span>) ?&#127793;)
+                     ((equal month <span style="color: #2aa198;">"May"</span>) ?&#127793;)
+                     ((equal month <span style="color: #2aa198;">"Jun"</span>) ?&#127795;)
+                     ((equal month <span style="color: #2aa198;">"Jul"</span>) ?&#127795;)
+                     ((equal month <span style="color: #2aa198;">"Aug"</span>) ?&#127795;)
+                     ((equal month <span style="color: #2aa198;">"Sep"</span>) ?&#127795;)
+                     ((equal month <span style="color: #2aa198;">"Oct"</span>) ?&#127794;)
+                     ((equal month <span style="color: #2aa198;">"Nov"</span>) ?&#127794;)
+                     ((equal month <span style="color: #2aa198;">"Dec"</span>) ?&#127876;))))
+    (set-fontset-font t tree <span style="color: #2aa198;">"Noto Emoji"</span> nil 'prepend)
+    tree))
+</pre>
+</div>
+
+<p>
+We've used the same trick here as for the Eshell prompt. While this has worked so far, at some point we'll have to declare that the entire range of emoji should be rendered using the Noto Emoji font.
+</p>
+
+<p>
+Now we declare the symbols used to create the tree.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">setq-default</span> gnus-sum-thread-tree-false-root (format <span style="color: #2aa198;">"%c "</span> (mak::seasonal-tree))
+              gnus-sum-thread-tree-root       (format <span style="color: #2aa198;">"%c "</span> (mak::seasonal-tree))
+              gnus-sum-thread-tree-indent          <span style="color: #2aa198;">" "</span>
+              gnus-sum-thread-tree-vertical        <span style="color: #2aa198;">"&#9474;"</span>
+              gnus-sum-thread-tree-leaf-with-other <span style="color: #2aa198;">"&#9500;&#9658; "</span>
+              gnus-sum-thread-tree-single-leaf     <span style="color: #2aa198;">"&#9584;&#9658; "</span>)
+</pre>
+</div>
+
+<p>
+One thing that I hadn't given much thought to before now is that the threading in Gnus always seemed wrong to me. It turns out that's because it was performing threading by <i>subject</i>, not by <i>reference</i>. This means that when I received automated emails with the same subject, they would be grouped into a thread. We can fix this easily:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">setq-default</span> gnus-summary-thread-gathering-function 'gnus-gather-threads-by-references)
+</pre>
+</div>
+
+<p>
+This allows my email to look much more sane to me, only threading messages that are actually related, to look similar to the following, except it's more spread out in reality:
+</p>
+
+<pre class="example">
+January 10   [REDACTED]  🌱 BSidesWpg 2017
+January 10   [REDACTED]  ╰►
+January 10   [REDACTED]   ├►
+January 15   [REDACTED]   │╰►
+January 23   [REDACTED]   │ ╰►
+January 23   [REDACTED]   │  ╰►
+January 24   [REDACTED]   │   ├►
+January 24   [REDACTED]   │   │├►
+January 24   [REDACTED]   │   ││├►
+January 25   [REDACTED]   │   │││╰►
+January 24   [REDACTED]   │   ││╰►
+January 24   [REDACTED]   │   │╰►
+January 24   [REDACTED]   │   ╰►
+January 10   [REDACTED]   ╰►
+...          ...          ...
+February 05  Audible.com  Thank you for shopping at Audible
+February 20  Audible.com  Thank you for shopping at Audible
+</pre>
+
+<p>
+Finally, I want to force Summary buffers to be sorted by date. Specifically, any time you enter a buffer Gnus will start you at the top, so the most recent articles should be there. Additionally, if there is a thread full of older messages, and one relatively new message, I want the entire thread to be placed into the Summary buffer according to the date of the newest message.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">setq-default</span> gnus-thread-sort-functions '(gnus-thread-sort-by-most-recent-date))
+</pre>
+</div>
+
+<p>
+This results in the following sort, in which the thread is sorted according to its newest article (January 25), not the root of the thread (January 10):
+</p>
+
+<pre class="example">
+January 25   [REDACTED]  [SkullSpace-Announce] ...
+January 10   [REDACTED]  🌱 BSidesWpg 2017
+January 10   [REDACTED]  ╰►
+January 10   [REDACTED]   ├►
+January 15   [REDACTED]   │╰►
+January 23   [REDACTED]   │ ╰►
+January 23   [REDACTED]   │  ╰►
+January 24   [REDACTED]   │   ├►
+January 24   [REDACTED]   │   │├►
+January 24   [REDACTED]   │   ││├►
+January 25   [REDACTED]   │   │││╰►
+January 24   [REDACTED]   │   ││╰►
+January 24   [REDACTED]   │   │╰►
+January 24   [REDACTED]   │   ╰►
+January 10   [REDACTED]   ╰►
+January 24   [REDACTED]  [SkullSpace-Announce] ...
+</pre>
+
+<p>
+That's enough for today!
+</p>
