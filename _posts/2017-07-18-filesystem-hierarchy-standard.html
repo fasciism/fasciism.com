@@ -22,15 +22,17 @@ As I dedicate myself to Eshell more, especially on this Macbook which violates a
   (<span style="color: #859900; font-weight: bold;">interactive</span>)
   <span style="color: #586e75;">;; </span><span style="color: #586e75;">The order of this list is critical:</span>
   <span style="color: #586e75;">;; </span><span style="color: #586e75;">1) Scripts I wrote myself</span>
-  <span style="color: #586e75;">;; </span><span style="color: #586e75;">2) Programs installed privately</span>
-  <span style="color: #586e75;">;; </span><span style="color: #586e75;">3) Programs installed system-wide</span>
-  <span style="color: #586e75;">;; </span><span style="color: #586e75;">4) Stock OS commands</span>
+  <span style="color: #586e75;">;; </span><span style="color: #586e75;">2) Programs installed privately (source)</span>
+  <span style="color: #586e75;">;; </span><span style="color: #586e75;">3) Programs installed privately (golang)</span>
+  <span style="color: #586e75;">;; </span><span style="color: #586e75;">4) Programs installed system-wide</span>
+  <span style="color: #586e75;">;; </span><span style="color: #586e75;">5) Stock OS commands</span>
   (mapcar #'expand-file-name
          (mak::flatten-list
           `((<span style="color: #2aa198;">"~/bin"</span>)
             ,(mak::locally-installed-programs)
+            (<span style="color: #2aa198;">"~/go/bin"</span>)
             (<span style="color: #2aa198;">"/usr/local/bin"</span> <span style="color: #2aa198;">"/usr/local/sbin"</span>)
-            (<span style="color: #2aa198;">"/bin"</span> <span style="color: #2aa198;">"/sbin"</span>)))))
+            (<span style="color: #2aa198;">"/usr/bin"</span> <span style="color: #2aa198;">"/usr/sbin"</span> <span style="color: #2aa198;">"/bin"</span> <span style="color: #2aa198;">"/sbin"</span>)))))
 </pre>
 </div>
 
