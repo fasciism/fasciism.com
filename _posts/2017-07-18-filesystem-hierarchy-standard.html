@@ -1,0 +1,71 @@
+---
+layout: post
+---
+
+<p>
+As I dedicate myself to Eshell more, especially on this Macbook which violates all my muscle memory in Terminal.app, a few tweaks are needed to be able to find all my commands:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">defun</span> <span style="color: #268bd2;">mak::flatten-list</span> (l)
+  (apply #'append l))
+
+(<span style="color: #859900; font-weight: bold;">defun</span> <span style="color: #268bd2;">mak::locally-installed-programs</span> ()
+  (mak::flatten-list
+   (mapcar
+    (<span style="color: #859900; font-weight: bold;">lambda</span> (d) (list (concat d <span style="color: #2aa198;">"/bin"</span>)
+                      (concat d <span style="color: #2aa198;">"/sbin"</span>)))
+    (directory-files <span style="color: #2aa198;">"~/local"</span> t directory-files-no-dot-files-regexp))))
+
+(<span style="color: #859900; font-weight: bold;">defun</span> <span style="color: #268bd2;">mak::generate-path-env-var</span> ()
+  (<span style="color: #859900; font-weight: bold;">interactive</span>)
+  <span style="color: #586e75;">;; </span><span style="color: #586e75;">The order of this list is critical:</span>
+  <span style="color: #586e75;">;; </span><span style="color: #586e75;">1) Scripts I wrote myself</span>
+  <span style="color: #586e75;">;; </span><span style="color: #586e75;">2) Programs installed privately</span>
+  <span style="color: #586e75;">;; </span><span style="color: #586e75;">3) Programs installed system-wide</span>
+  <span style="color: #586e75;">;; </span><span style="color: #586e75;">4) Stock OS commands</span>
+  (mapcar #'expand-file-name
+         (mak::flatten-list
+          `((<span style="color: #2aa198;">"~/bin"</span>)
+            ,(mak::locally-installed-programs)
+            (<span style="color: #2aa198;">"/usr/local/bin"</span> <span style="color: #2aa198;">"/usr/local/sbin"</span>)
+            (<span style="color: #2aa198;">"/bin"</span> <span style="color: #2aa198;">"/sbin"</span>)))))
+</pre>
+</div>
+
+<p>
+Let's use IELM to test those functions, since we've not used it before and it's neat to see.
+</p>
+
+<pre class="example">
+ELISP&gt; (mak::flatten-list '((a) (b c) (d e f) (g (h) i)))
+(a b c d e f g
+   (h)
+   i)
+
+ELISP&gt; (mak::locally-installed-programs)
+("/Users/mak/local/openssl/bin" "/Users/mak/local/openssl/sbin")
+
+ELISP&gt; (mak::generate-path-env-var)
+("/Users/mak/bin" "/Users/mak/local/openssl/bin" "/Users/mak/local/openssl/sbin" "/usr/local/bin" "/usr/local/sbin" "/bin" "/sbin")
+</pre>
+
+<p>
+You'll notice that flatten only goes one level deep. I'm okay with that for now, but I anticipate Future Me hating Present Me for this.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">defun</span> <span style="color: #268bd2;">mak::set-path-env-var</span> ()
+  (<span style="color: #859900; font-weight: bold;">interactive</span>)
+  (setenv <span style="color: #2aa198;">"PATH"</span>
+          (string-join (mak::generate-path-env-var) <span style="color: #2aa198;">":"</span>)))
+
+(add-hook 'eshell-mode-hook 'mak::set-path-env-var)
+</pre>
+</div>
+
+<p>
+And there we have it! Eshell will now generate and set the appropriate <code>$PATH</code> variable when it starts.
+</p>
