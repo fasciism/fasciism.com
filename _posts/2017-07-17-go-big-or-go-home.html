@@ -1,0 +1,13 @@
+---
+layout: post
+---
+
+<p>
+As part of using a Macbook for my new job, I've come to dislike the behaviour of apps not taking up the full screen on startup. Coming from the land of tiling window managers, I've finally had to break down and force Emacs to be fullscreen on start. The below code ensures that the first frame created by Emacs will be maximized, while other frames will have the size the OS decides.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(add-to-list 'initial-frame-alist '(fullscreen . maximized))
+</pre>
+</div>
