@@ -1,0 +1,61 @@
+---
+layout: post
+---
+
+<p>
+Before we begin, I'm going to be using a lot of snippets from Git's configuration file(s). I originally used <code>BEGIN_EXAMPLE</code> to render these as preformatted blocks, but after some research I discovered that the following code will create a new 'source language' with which we can view those snippets.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-emacs-lisp">(add-to-list 'org-src-lang-modes '(<span style="color: #2aa198;">"gitconfig"</span> . <span style="color: #2aa198;">"conf-unix"</span>))
+</pre>
+</div>
+
+<p>
+I found that mode's name by opening <code>~/.gitconfig</code> and typing <code>C-h v major-mode</code> to view the value.
+</p>
+
+<p>
+With my new job using GitHub for its development workflow, suddenly maintaining a separate work identity in Git matters. Since we have dozens of repositories, setting my identify in each one qas getting very tedious and error-prone. Git now has a feature that permits including files into its configuration based on the directory of the repository. This by having the following within my <code>~/.gitconfig</code>:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-gitconfig">[includeIf <span style="color: #2aa198;">"gitdir/i:~/go/"</span>]
+      <span style="color: #268bd2;">path</span> = ~/.gitconfig.work
+</pre>
+</div>
+
+<p>
+Note the use of <code>gitdir/i</code>, since I am on a Macbook which I just discovered treats path components in a case-insensitive manner, so we use this instead of <code>gitdir</code> just in case. The contents of <code>~/.gitconfig.work</code> are:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-gitconfig">[<span style="color: #b58900;">user</span>]
+      <span style="color: #268bd2;">email</span> = &lt;my-work-email&gt;
+</pre>
+</div>
+
+<p>
+Additionally, there are some files that I create locally (e.g., <code>TAGS</code>) that I do not want to be considered by Git. Adding these to each repo sucks, so I'm now taking advantage of the following in <code>~/.gitconfig</code>, which does just what it says on the tin:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-gitconfig">[<span style="color: #b58900;">core</span>]
+      <span style="color: #268bd2;">excludesfile</span> = ~/.gitignore.global
+</pre>
+</div>
+
+<p>
+Finally, some of the setup scripts I've been running into try to clone private repositories from GitHub over HTTPS, requiring usernames and passwords. Since I'm a firm believer in the user of SSH keys whenever possible, but don't want to (or don't have the power to) fix all these scripts, I have found another handy Git feature that forces specified transports for certain hosts:
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-gitconfig">[url <span style="color: #2aa198;">"git@github.com:"</span>]
+      <span style="color: #268bd2;">insteadOf</span> = https://github.com/
+</pre>
+</div>
