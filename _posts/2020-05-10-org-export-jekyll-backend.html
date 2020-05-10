@@ -1,0 +1,158 @@
+---
+title:  "Org Export Jekyll Backend"
+layout: post
+---
+
+<p>
+Since I started this blog I've been using a <a href="https://fasciism.com/2017/01/25/batch-jekyll-publishing/">sketchy method</a> to add the necessary YAML headers to exported Org-mode files for Jekyll. It's a pain, and I screwed it up yesterday and discovered that the titles for previous blog posts weren't always proper. The reason for that is the titles were based on the file names, and those don't contain all the proper capitalization and punctuation. Poka-yoke dictates that I must now create either guardrails or automation to prevent me from screwing this up in future, and also use this as an opportunity to learn something.
+</p>
+
+<p>
+Org-mode has many backends that export to different formats, but it also allows backends to derive from other backends. This blog had been <a href="https://fasciism.com/2017/01/05/self-publishing/">using</a> the HTML backend. What I'd like to have is an exporter that allows me to have custom export options translated into a YAML header for use by Jekyll, with defaults. For example:
+</p>
+
+<pre class="example">
+#+TITLE: Org Export Jekyll Backend
+</pre>
+
+<p>
+And the output written to the fASCIIsm Jekyll repository would be:
+</p>
+
+<pre class="example">
+---
+title:  "Org Export Jekyll Backend"
+layout: post
+---
+</pre>
+
+<p>
+Reading through the documentation, I discovered the following variable that does exactly what I want:
+</p>
+
+<p class="verse">
+org-export-options-alist is a variable defined in ‘ox.el’.<br />
+&#x2026;<br />
+Alist between export properties and ways to set them.<br />
+<br />
+The key of the alist is the property name, and the value is a list<br />
+like (KEYWORD OPTION DEFAULT BEHAVIOR) where:<br />
+<br />
+KEYWORD is a string representing a buffer keyword, or nil.  Each<br />
+&#xa0;&#xa0;property defined this way can also be set, during subtree<br />
+&#xa0;&#xa0;export, through a headline property named after the keyword<br />
+&#xa0;&#xa0;with the "EXPORT_" prefix (i.e. DATE keyword and EXPORT<sub>DATE</sub><br />
+&#xa0;&#xa0;property).<br />
+OPTION is a string that could be found in an #+OPTIONS: line.<br />
+DEFAULT is the default value for the property.<br />
+BEHAVIOR determines how Org should handle multiple keywords for<br />
+&#xa0;&#xa0;the same property.  It is a symbol among:<br />
+&#xa0;&#xa0;nil       Keep old value and discard the new one.<br />
+&#xa0;&#xa0;t         Replace old value with the new one.<br />
+</p>
+
+<p>
+The documentation for this variable also notes that <code>#+TITLE</code> is already defined for all exporters, meaning we only need to define <code>#+LAYOUT</code> and give it our desired default.
+</p>
+
+<p>
+The <code>template</code> hook in the <code>translate-alist</code> defined the final output function of an exporter. By redefining this, while leaving all other hooks alone, we cause the exporter to fall back to using the HTML backend for everything except the final output.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">require</span> '<span style="color: #268bd2; font-weight: bold;">org</span>)
+(<span style="color: #859900; font-weight: bold;">require</span> '<span style="color: #268bd2; font-weight: bold;">ox-publish</span>)
+
+(org-export-define-derived-backend 'jekyll 'html
+  <span style="color: #839496; font-weight: bold;">:options-alist</span>
+  '((nil <span style="color: #2aa198;">"LAYOUT"</span> <span style="color: #2aa198;">"post"</span> t))
+  <span style="color: #839496; font-weight: bold;">:translate-alist</span>
+  '((template . org-jekyll-template)))
+</pre>
+</div>
+
+<p>
+Next, I <del>stole</del> <del>liberated</del> <del>borrowed</del> <del>blindly copied</del> took inspiration from the template functions in <a href="https://code.orgmode.org/bzg/org-mode/src/master/lisp/ox-beamer.el">org-mode/lisp/ox-beamer.el</a> and <a href="https://code.orgmode.org/bzg/org-mode/src/master/contrib/lisp/ox-confluence.el">org-mode/contrib/lisp/ox-confluence.el</a> to produce a function that outputs the HTMLified content with a YAML header in front:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">defun</span> <span style="color: #268bd2;">org-jekyll-template</span> (contents info)
+  (<span style="color: #859900; font-weight: bold;">let</span> ((title (org-export-data (plist-get info <span style="color: #839496; font-weight: bold;">:title</span>) info))
+        (layout (org-export-data (plist-get info <span style="color: #839496; font-weight: bold;">:layout</span>) info)))
+    (concat <span style="color: #2aa198;">"---\n"</span>
+            (format <span style="color: #2aa198;">"title:  \"%s\"\n"</span> title)
+            (format <span style="color: #2aa198;">"layout: post\n"</span> layout)
+            <span style="color: #2aa198;">"---\n\n"</span>
+            contents)))
+</pre>
+</div>
+
+<p>
+Since testing is good I took another function from <code>org-mode/contrib/lisp/ox-confluence.el</code>:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">defun</span> <span style="color: #268bd2;">org-jekyll-export-as-jekyll</span> (<span style="color: #b58900;">&amp;optional</span> async subtreep visible-only body-only ext-plist)
+  <span style="color: #2aa198;">"Export current buffer to a text buffer.</span>
+
+<span style="color: #2aa198;">For information on arguments, see `</span><span style="color: #268bd2; font-weight: bold;">org-export-to-buffer</span><span style="color: #2aa198;">'."</span>
+  (<span style="color: #859900; font-weight: bold;">interactive</span>)
+  (org-export-to-buffer 'jekyll <span style="color: #2aa198;">"*org JEKYLL Export*"</span>
+    async subtreep visible-only body-only ext-plist (<span style="color: #859900; font-weight: bold;">lambda</span> () (text-mode))))
+</pre>
+</div>
+
+<p>
+Running this function via <code>M-x org-export-jekyll-as-jekyll</code>, this blog post/config file renders:
+</p>
+
+<pre class="example">
+---
+title:  "Org Export Jekyll Backend"
+layout: post
+---
+
+&lt;p&gt;
+Since I started this blog I've been using a...
+</pre>
+
+<p>
+Exporting to buffers is good for testing, but exporting to files is necessary for the project interface.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">defun</span> <span style="color: #268bd2;">org-jekyll-publish-to-jekyll</span> (plist filename pub-dir)
+  <span style="color: #2aa198;">"Publish an org file to Jekyll.</span>
+
+<span style="color: #2aa198;">For information on arguments, see `</span><span style="color: #268bd2; font-weight: bold;">org-publish-org-to</span><span style="color: #2aa198;">'."</span>
+  (org-publish-org-to 'jekyll filename <span style="color: #2aa198;">".html"</span> plist pub-dir))
+</pre>
+</div>
+
+<p>
+Finally, I need to get the Org-mode project reconfigured to use our new exporter. Going back to our <a href="https://fasciism.com/2017/01/05/self-publishing/">previous setup</a> and copying and editing the project's declaration is easier than altering the existing declaration. We can also fix a long-standing goof about the location of images.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">provide</span> '<span style="color: #268bd2; font-weight: bold;">ox-jekyll</span>)
+
+<span style="color: #586e75;">;; </span><span style="color: #586e75;">Set up blog for export as an Org-mode project.</span>
+(<span style="color: #859900; font-weight: bold;">setq</span> org-publish-project-alist
+      '((<span style="color: #2aa198;">"fasciism-posts"</span>
+         <span style="color: #839496; font-weight: bold;">:base-directory</span> <span style="color: #2aa198;">"~/.emacs.d/"</span>
+         <span style="color: #839496; font-weight: bold;">:base-extension</span> <span style="color: #2aa198;">"org"</span>
+         <span style="color: #839496; font-weight: bold;">:publishing-directory</span> <span style="color: #2aa198;">"~/src/fasciism/_posts/"</span>
+         <span style="color: #839496; font-weight: bold;">:publishing-function</span> org-jekyll-publish-to-jekyll)
+        (<span style="color: #2aa198;">"fasciism-images"</span>
+         <span style="color: #839496; font-weight: bold;">:base-directory</span> <span style="color: #2aa198;">"~/.emacs.d/images/"</span>
+         <span style="color: #839496; font-weight: bold;">:base-extension</span> <span style="color: #2aa198;">"gif</span><span style="color: #859900; font-weight: bold;">\\</span><span style="color: #b58900; font-weight: bold;">|</span><span style="color: #2aa198;">jpg</span><span style="color: #859900; font-weight: bold;">\\</span><span style="color: #b58900; font-weight: bold;">|</span><span style="color: #2aa198;">png</span><span style="color: #859900; font-weight: bold;">\\</span><span style="color: #b58900; font-weight: bold;">|</span><span style="color: #2aa198;">svg"</span>
+         <span style="color: #839496; font-weight: bold;">:publishing-directory</span> <span style="color: #2aa198;">"~/src/fasciism/img/"</span>
+         <span style="color: #839496; font-weight: bold;">:publishing-function</span> org-publish-attachment)
+        (<span style="color: #2aa198;">"fasciism"</span>
+         <span style="color: #839496; font-weight: bold;">:components</span> (<span style="color: #2aa198;">"fasciism-posts"</span> <span style="color: #2aa198;">"fasciism-images"</span>))))
+</pre>
+</div>
+
+<p>
+Now I can use <code>C-c C-e</code> to access the Org Export Dispatcher to export either this post or this whole blog.
+</p>
