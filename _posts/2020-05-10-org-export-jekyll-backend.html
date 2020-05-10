@@ -11,20 +11,22 @@ Since I started this blog I've been using a <a href="https://fasciism.com/2017/0
 Org-mode has many backends that export to different formats, but it also allows backends to derive from other backends. This blog had been <a href="https://fasciism.com/2017/01/05/self-publishing/">using</a> the HTML backend. What I'd like to have is an exporter that allows me to have custom export options translated into a YAML header for use by Jekyll, with defaults. For example:
 </p>
 
-<pre class="example">
-#+TITLE: Org Export Jekyll Backend
+<div class="org-src-container">
+<pre class="src src-org"><span style="color: #586e75;">#+TITLE:</span> <span style="color: #93a1a1; font-size: 130%; font-weight: bold;">Org Export Jekyll Backend</span>
 </pre>
+</div>
 
 <p>
 And the output written to the fASCIIsm Jekyll repository would be:
 </p>
 
-<pre class="example">
----
-title:  "Org Export Jekyll Backend"
-layout: post
----
+<div class="org-src-container">
+<pre class="src src-yaml"><span style="color: #586e75;">---</span>
+<span style="color: #268bd2;">title</span>:  <span style="color: #2aa198;">"Org Export Jekyll Backend"</span>
+<span style="color: #268bd2;">layout</span>: post
+<span style="color: #586e75;">---</span>
 </pre>
+</div>
 
 <p>
 Reading through the documentation, I discovered the following variable that does exactly what I want:
@@ -106,15 +108,16 @@ Since testing is good I took another function from <code>org-mode/contrib/lisp/o
 Running this function via <code>M-x org-export-jekyll-as-jekyll</code>, this blog post/config file renders:
 </p>
 
-<pre class="example">
----
-title:  "Org Export Jekyll Backend"
-layout: post
----
+<div class="org-src-container">
+<pre class="src src-yaml"><span style="color: #586e75;">---</span>
+<span style="color: #268bd2;">title</span>:  <span style="color: #2aa198;">"Org Export Jekyll Backend"</span>
+<span style="color: #268bd2;">layout</span>: post
+<span style="color: #586e75;">---</span>
 
 &lt;p&gt;
 Since I started this blog I've been using a...
 </pre>
+</div>
 
 <p>
 Exporting to buffers is good for testing, but exporting to files is necessary for the project interface.
