@@ -1,0 +1,55 @@
+---
+title:  "Accumulate, Don't Poll"
+layout: post
+---
+
+<p>
+We're in the middle of the pandemic. This is my tenth year of working from home. My three kids and wife are all in the house with me, as all activities are cancelled and have been for two months. My brain has been melting, and refreshing the aggregators and social media sites I favour is more problematic than it used to be. The solution seems clear to me: accumulate, don't poll.
+</p>
+
+<p>
+When I was keeping my programs separate, I had a dedicated tmux window for Newsbeuter, which is an <span class="underline">amazing</span> feed reader that is best described as "The Mutt of Feed Readers". It's good, but it's not Emacs.
+</p>
+
+<p>
+Elfeed is almost exactly like Newsbeuter, except by virtue of being inside Emacs I can customize its behaviours more conveniently, and get integration into Org.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">use-package</span> <span style="color: #268bd2; font-weight: bold;">elfeed</span>
+  <span style="color: #839496; font-weight: bold;">:ensure</span> t
+  <span style="color: #839496; font-weight: bold;">:pin</span> melpa)
+</pre>
+</div>
+
+<p>
+I don't set a key for Elfeed because I'd rather invoke it with <code>M-x elfeed</code>. I try to save keybindings for things that I do constantly, and as part of a workflow. I should be checking Elfeed a couple times a day, ideally. I'll start by adding a few feeds that I want to make sure I get everything they publish.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">setq</span> elfeed-feeds
+      '(<span style="color: #2aa198;">"https://fasciism.com/feed.xml"</span>
+        <span style="color: #2aa198;">"https://leahneukirchen.org/trivium/index.atom"</span>
+        <span style="color: #2aa198;">"https://www.daemonology.net/blog/index.rss"</span>
+        <span style="color: #2aa198;">"https://www.spinellis.gr/blog/dds-blog-rss.xml"</span>
+        <span style="color: #2aa198;">"http://n-gate.com/index.atom"</span>))
+</pre>
+</div>
+
+<p>
+With that small bit of configuration done, we already have something that looks usable:
+</p>
+
+
+<div class="figure">
+<p><img src="https://fasciism.com/img/2020-05-13-accumulate-dont-poll.png" alt="2020-05-13-accumulate-dont-poll.png" />
+</p>
+</div>
+
+<p>
+The normal navigation/search keys work as expected, <code>Enter</code> opens an entry into an <code>*elfeed-entry*</code> buffer with metadata at the top including a link to the post, images are displayed, hitting <code>Enter</code> on links opens them in Firefox, and <code>q</code> kills the buffer.
+</p>
+
+<p>
+I was happy enough with the defaults that I lost an hour to reading my feeds while writing this post. I can almost feel my brain solidifying again. Now I just need to get Twitter and Reddit managed better.
+</p>
