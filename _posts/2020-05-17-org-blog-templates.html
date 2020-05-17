@@ -1,0 +1,69 @@
+---
+title:  "Org Blog Templates"
+layout: post
+---
+
+<p>
+I was considering what part of my workflow to improve next when I remembered that I've had to type <code>#+begin_</code> and <code>#+end_</code> a lot recently. I looked at <code>org-structure-template-alist</code>, but realized that if I wanted to start using templating in my workflows then it should be something universal, not something only useful within org-mode. Enter YASnippet:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">use-package</span> <span style="color: #268bd2; font-weight: bold;">yasnippet</span>
+  <span style="color: #839496; font-weight: bold;">:ensure</span> t
+  <span style="color: #839496; font-weight: bold;">:pin</span> melpa
+  <span style="color: #839496; font-weight: bold;">:mode</span> <span style="color: #2aa198;">"/emacs.[dp]/snippets/[</span><span style="color: #b58900; font-weight: bold;">^</span><span style="color: #2aa198;">/]*/"</span>
+  <span style="color: #839496; font-weight: bold;">:config</span>
+  (<span style="color: #859900; font-weight: bold;">setq</span> yas-snippet-dirs '(<span style="color: #2aa198;">"~/.emacs.d/snippets"</span> <span style="color: #2aa198;">"~/.emacs.p/snippets"</span>))
+  (yas-global-mode t))
+</pre>
+</div>
+
+<p>
+A great project exists called <a href="https://github.com/AndreaCrotti/yasnippet-snippets">yasnippet-snippets</a>, containing snippets for most programming languages. While that's a great reasource, I'd much rather import and customize the snippets I like and intend to use than import a massive collection of them. I've hardwired YASnippet to look in both my public (<code>~/.emacs.d</code>) and my private (<code>~/.emacs.p</code>) configurations for snippets. This allows me to keep, for example, templates for my emails and Git commits private.
+</p>
+
+<p>
+Most snippets I have seen online begin with <code># -*- mode: snippet -*-</code>, which tells Emacs to use the major mode <code>snippet-mode</code> for the file's buffer. I dislike using such things, and instead have used the <code>:mode</code> keyword to enable the major mode for all files within subdirectories of <code>yas-snippet-dirs</code>.
+</p>
+
+<p>
+Now to make three templates that reduce the effort of writing these blog posts ever so slightly. First up is a source block, which is used for both executing code (as above) and displaying code without executing it (as below):
+</p>
+
+<div class="org-src-container">
+<pre class="src src-snippet"><span style="color: #586e75;"># name: src block</span>
+<span style="color: #586e75;"># key: &lt;s</span>
+<span style="color: #586e75;"># --</span>
+<span style="color: #586e75;">#+begin_src ${</span><span style="color: #cb4b16; font-weight: bold;">1</span><span style="color: #586e75;">:emacs-lisp}</span>
+<span style="color: #859900; font-weight: bold;">$</span><span style="color: #2aa198;">0</span>
+<span style="color: #586e75;">#+end_src</span>
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-snippet"><span style="color: #586e75;"># name: example block</span>
+<span style="color: #586e75;"># key: &lt;e</span>
+<span style="color: #586e75;"># --</span>
+<span style="color: #586e75;">#+begin_example</span>
+<span style="color: #859900; font-weight: bold;">$</span><span style="color: #2aa198;">0</span>
+<span style="color: #586e75;">#+end_example</span>
+</pre>
+</div>
+
+<div class="org-src-container">
+<pre class="src src-snippet"><span style="color: #586e75;"># name: verse block</span>
+<span style="color: #586e75;"># key: &lt;v</span>
+<span style="color: #586e75;"># --</span>
+<span style="color: #586e75;">#+begin_verse</span>
+<span style="color: #859900; font-weight: bold;">$</span><span style="color: #2aa198;">0</span>
+<span style="color: #586e75;">#+end_verse</span>
+</pre>
+</div>
+
+<p>
+The relevant difference between example and verse blocks, for my purposes, is that example blocks don't wrap text, while verse blocks do.
+</p>
+
+<p>
+Now typing <code>&lt;s[TAB]</code> expands the <code>src block</code> template if I'm in an <code>org-mode</code> buffer.
+</p>
