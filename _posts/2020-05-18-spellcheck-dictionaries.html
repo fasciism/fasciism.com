@@ -1,0 +1,93 @@
+---
+title:  "Spellcheck Dictionaries"
+layout: post
+---
+
+<p>
+I first tackled spellchecking <a href="https://fasciism.com/2017/01/16/spellchecking/">way back</a> at the start of this blog, but I only configured the files and languages, not the dictionaries and environment. Three work laptops later, this has become a problem. First I'll install Hunspell on the MacBook:
+</p>
+
+<pre class="example">
+% brew install hunspell
+...
+==&gt; Caveats
+Dictionary files (*.aff and *.dic) should be placed in
+~/Library/Spelling/ or /Library/Spelling/.
+</pre>
+
+<p>
+Then I'll fetch the <a href="https://extensions.libreoffice.org/extensions/english-dictionaries">dictionaries</a> and extract them where I want them to go, non-standard as that may be:
+</p>
+
+<pre class="example">
+% mkdir ~/.hunspell
+
+% file dict-en-20200501.oxt
+dict-en-20200501.oxt: Zip archive data, at least v2.0 to extract
+
+% unzip dict-en-20200501.oxt
+Archive:  dict-en-20200501.oxt
+  ...
+  inflating: en_CA.aff
+  inflating: en_CA.dic
+  inflating: en_US.aff
+  inflating: en_US.dic
+  ...
+</pre>
+
+<p>
+Having to worry about different shells (Bash, Zsh, Eshell) using different startup files for setting environment variables annoyed me, so I decided I'm going to have a <code>~/.environment</code> file that I make my shells all read from. While I could have used <code>~/.profile</code> and then told Zsh to read from it, I'd rather a file no tool is going to get clever with and mangle.
+</p>
+
+<pre class="example">
+% cat ~/.environment
+# Required by Hunspell
+export DICPATH="$HOME/.hunspell"
+
+% cat ~/.profile
+source ~/.environment
+
+% cat ~/.zshenv
+source ~/.environment
+</pre>
+
+<p>
+Deleting all but those four files, since those are the languages (dialects) in which I write, I make then need to test that they're active. First I ensure I have a fresh session and then:
+</p>
+
+<pre class="example">
+% hunspell -D
+SEARCH PATH:
+.::/Users/mak/.hunspell:...
+
+AVAILABLE DICTIONARIES (path is not mandatory for -d option):
+/Users/mak/.hunspell/en_CA
+/Users/mak/.hunspell/en_US
+</pre>
+
+<p>
+Next, I <a href="https://en.wikipedia.org/wiki/Eating_your_own_dog_food">dogfood</a> Hunspell by running it on its own README, and after ignoring the many false-positives I found an actual mistake:
+</p>
+
+
+<div class="figure">
+<p><img src="https://fasciism.com/img/2020-05-18-spellcheck-dictionaries.png" alt="2020-05-18-spellcheck-dictionaries.png" />
+</p>
+</div>
+
+<p>
+Hunspell was still screaming about not being able to find dictionaries, so I need to be pulling things out of shell environment variables properly. There's a package for exactly that:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(<span style="color: #859900; font-weight: bold;">use-package</span> <span style="color: #268bd2; font-weight: bold;">exec-path-from-shell</span>
+  <span style="color: #839496; font-weight: bold;">:pin</span> melpa
+  <span style="color: #839496; font-weight: bold;">:config</span>
+  (add-to-list 'exec-path-from-shell-variables <span style="color: #2aa198;">"DICPATH"</span>)
+  (exec-path-from-shell-initialize))
+</pre>
+</div>
+
+<p>
+And now I'm save from spelling mistakes once again.
+</p>
